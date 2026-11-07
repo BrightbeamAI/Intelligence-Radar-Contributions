@@ -70,7 +70,8 @@ export function peoplePage(roster, repo) {
     '# People',
     '',
     'The editors, specialist reviewers and contributors approved to contribute to [The Intelligence Radar](https://theintelligenceradar.com/).',
-    `Contributions from these GitHub accounts go to review automatically. To join them, [apply to contribute](https://github.com/${repo}/issues/new?template=apply.yml).`,
+    // through www.github.com: a full page load opens the form, where a link inside GitHub would open a blank issue
+    `Contributions from these GitHub accounts go to review automatically. To join them, [apply to contribute](https://www.github.com/${repo}/issues/new?template=apply.yml).`,
     '',
   ];
   for (const role of order) {

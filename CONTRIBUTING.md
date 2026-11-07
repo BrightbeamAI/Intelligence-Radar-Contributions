@@ -4,7 +4,7 @@ The reviewers judge each contribution on its evidence. These points help them de
 
 ## Before you start
 
-- Make sure your GitHub account is on the [list of people](PEOPLE.md). If it is not, [apply to contribute](../../issues/new?template=apply.yml) first: contributions from other accounts wait until an editor approves the application.
+- Make sure your GitHub account is on the [list of people](PEOPLE.md). If it is not, [apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml) first: contributions from other accounts wait until an editor approves the application.
 - Read the entry on [TheIntelligenceRadar.com](https://theintelligenceradar.com/) as it stands now. Each entry page links to the forms with the entry filled in.
 - One contribution, one change. Send separate issues for separate points.
 - Declare any interest: a vendor, client, employer or product named in the entry or in your sources. Write None if there is nothing to declare.

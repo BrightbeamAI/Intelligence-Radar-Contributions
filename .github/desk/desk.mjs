@@ -50,6 +50,11 @@ export class Desk {
     return `https://github.com/${this.repo}/${path}`;
   }
 
+  /** An issue form. Through www.github.com: a full page load opens the form, where a link inside GitHub opens a blank issue. */
+  form(file) {
+    return `https://www.github.com/${this.repo}/issues/new?template=${file}`;
+  }
+
   today() {
     return this.now().toISOString().slice(0, 10);
   }
@@ -161,7 +166,7 @@ export class Desk {
       await this.labels(issue, kind, 'needs-approval');
       await this.notice(issue, events, 'needs-approval',
         `Thank you, @${author}. Contributions go to review only from the people on the [list of people](${this.link('blob/main/PEOPLE.md')}), and this account is not on it yet. `
-        + `To apply, open [Apply to contribute](${this.link('issues/new?template=apply.yml')}). Once an editor approves the application, this issue goes to review automatically.`);
+        + `To apply, open [Apply to contribute](${this.form('apply.yml')}). Once an editor approves the application, this issue goes to review automatically.`);
       return 'needs approval';
     }
     const payload = parsed.payload;

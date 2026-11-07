@@ -35,7 +35,8 @@ export class FakeGitHub {
 
   openIssue(login, { title, body, labels = [] }) {
     const n = this.issues.size + 1;
-    const issue = { number: n, title, body, labels: labels.map((name) => ({ name })), state: 'open', state_reason: null, user: this.users.get(login.toLowerCase()), created_at: this.tick() };
+    const issue = { number: n, title, body, labels: labels.map((name) => ({ name })), state: 'open', state_reason: null, user: this.users.get(login.toLowerCase()), created_at: this.tick(),
+      html_url: `https://github.com/${this.repo}/issues/${n}` };
     this.issues.set(n, issue);
     return structuredClone(issue);
   }
@@ -96,6 +97,8 @@ export class FakeGitHub {
       let list = [...this.issues.values()].filter((i) => state === 'all' || i.state === state);
       const creator = u.searchParams.get('creator');
       if (creator) list = list.filter((i) => i.user.login.toLowerCase() === creator.toLowerCase());
+      const wanted = (u.searchParams.get('labels') ?? '').split(',').filter(Boolean);
+      if (wanted.length) list = list.filter((i) => wanted.every((w) => i.labels.some((l) => l.name === w)));
       return paged(structuredClone(list));
     }
     if ((m = rest.match(/^\/issues\/(\d+)(\/.*)?$/))) {

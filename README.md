@@ -20,13 +20,16 @@ Contributions from the people on the [list of people](PEOPLE.md) go to review au
 
 | | Contribution | What it is for |
 |:-:|---|---|
-| <img src="assets/icon-review-light.png" width="32" alt=""> | **[Review an entry](../../issues/new?template=review.yml)** | Does it make sense, read well and carry the right labels? |
-| <img src="assets/icon-correction-light.png" width="32" alt=""> | **[Correct an entry](../../issues/new?template=correction.yml)** | A fact, figure, date or wording |
-| <img src="assets/icon-evidence-light.png" width="32" alt=""> | **[Add evidence](../../issues/new?template=evidence.yml)** | A source that supports, challenges or qualifies a judgement |
-| <img src="assets/icon-label-change-light.png" width="32" alt=""> | **[Propose a label change](../../issues/new?template=label-change.yml)** | A different label, with its conditions and evidence |
-| <img src="assets/icon-new-entry-light.png" width="32" alt=""> | **[Propose a new entry](../../issues/new?template=new-entry.yml)** | A capability or practice not yet judged |
-| <img src="assets/icon-assistant-light.png" width="32" alt=""> | **[From your AI assistant](https://theintelligenceradar.com/ai-tools.html)** | The MCP server prepares, checks and sends any of the above |
-| <img src="assets/icon-apply-light.png" width="32" alt=""> | **[Apply to contribute](../../issues/new?template=apply.yml)** | Not approved yet? Practitioners, researchers and independent experts are welcome |
+| <img src="assets/icon-review-light.png" width="32" alt=""> | **[Review an entry](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=review.yml)** | Does it make sense, read well and carry the right labels? |
+| <img src="assets/icon-correction-light.png" width="32" alt=""> | **[Correct an entry](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=correction.yml)** | A fact, figure, date or wording |
+| <img src="assets/icon-evidence-light.png" width="32" alt=""> | **[Add evidence](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=evidence.yml)** | A source that supports, challenges or qualifies a judgement |
+| <img src="assets/icon-label-change-light.png" width="32" alt=""> | **[Propose a label change](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=label-change.yml)** | A different label, with its conditions and evidence |
+| <img src="assets/icon-new-entry-light.png" width="32" alt=""> | **[Propose a new entry](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=new-entry.yml)** | A capability or practice not yet judged |
+| <img src="assets/icon-assistant-light.png" width="32" alt=""> | **[From your AI assistant](https://github.com/BrightbeamAI/intelligence-radar-mcp#install)** | The MCP server prepares, checks and sends any of the above |
+| <img src="assets/icon-apply-light.png" width="32" alt=""> | **[Apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml)** | Not approved yet? Practitioners, researchers and independent experts are welcome |
+
+<!-- The form links go through www.github.com on purpose: a link inside GitHub to issues/new?template=… opens a blank issue, while a full page load opens the form. -->
+
 
 Each entry's page on the website links to these forms with the entry filled in.
 

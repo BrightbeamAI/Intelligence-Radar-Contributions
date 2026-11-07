@@ -1,7 +1,7 @@
 # People
 
 The editors, specialist reviewers and contributors approved to contribute to [The Intelligence Radar](https://theintelligenceradar.com/).
-Contributions from these GitHub accounts go to review automatically. To join them, [apply to contribute](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
+Contributions from these GitHub accounts go to review automatically. To join them, [apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
 
 ## Editors
 
