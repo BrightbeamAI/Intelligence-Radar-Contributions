@@ -185,7 +185,7 @@
      "id": "credit_name",
      "label": "Name to credit",
      "to": "credit.name",
-     "description": "Leave empty to use your name on the list of people.",
+     "description": "Leave empty to use your name on the list of people, or your GitHub username.",
      "placeholder": "",
      "required": false
     },
@@ -307,7 +307,7 @@
      "id": "credit_name",
      "label": "Name to credit",
      "to": "credit.name",
-     "description": "Leave empty to use your name on the list of people.",
+     "description": "Leave empty to use your name on the list of people, or your GitHub username.",
      "placeholder": "",
      "required": false
     },
@@ -416,7 +416,7 @@
      "id": "credit_name",
      "label": "Name to credit",
      "to": "credit.name",
-     "description": "Leave empty to use your name on the list of people.",
+     "description": "Leave empty to use your name on the list of people, or your GitHub username.",
      "placeholder": "",
      "required": false
     },
@@ -552,7 +552,7 @@
      "id": "credit_name",
      "label": "Name to credit",
      "to": "credit.name",
-     "description": "Leave empty to use your name on the list of people.",
+     "description": "Leave empty to use your name on the list of people, or your GitHub username.",
      "placeholder": "",
      "required": false
     },
@@ -741,7 +741,7 @@
      "id": "credit_name",
      "label": "Name to credit",
      "to": "credit.name",
-     "description": "Leave empty to use your name on the list of people.",
+     "description": "Leave empty to use your name on the list of people, or your GitHub username.",
      "placeholder": "",
      "required": false
     },
@@ -771,9 +771,9 @@
   {
    "file": "apply.yml",
    "kind": null,
-   "name": "Apply to contribute",
+   "name": "Apply to review",
    "title": "[Apply] ",
-   "description": "Ask to become an approved contributor or specialist reviewer.",
+   "description": "Ask to become a specialist reviewer or an editor of The Intelligence Radar.",
    "fields": [
     {
      "type": "input",
@@ -799,8 +799,8 @@
      "label": "Role",
      "to": "role",
      "options": [
-      "Contributor",
-      "Specialist reviewer"
+      "Specialist reviewer",
+      "Editor"
      ],
      "description": "",
      "required": false
