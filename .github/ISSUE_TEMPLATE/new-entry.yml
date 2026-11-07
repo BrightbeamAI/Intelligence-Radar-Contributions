@@ -1,0 +1,149 @@
+name: "Propose a new entry"
+description: "Propose a capability or practice The Intelligence Radar does not yet judge."
+title: "[New entry] "
+labels: ["contribution", "new-entry"]
+body:
+  - type: markdown
+    attributes:
+      value: "Only approved contributors' issues go to review. Not approved yet? Use **Apply to contribute** first. Every contribution is reviewed by the editors and specialist reviewers, and each decision is recorded with its reason. Approved contributions are published on https://theintelligenceradar.com/ with credit."
+  - type: input
+    id: entry_title
+    attributes:
+      label: "Title"
+      description: "The capability or practice, in a few words."
+    validations:
+      required: true
+  - type: dropdown
+    id: dimension
+    attributes:
+      label: "Dimension"
+      options:
+        - "Models and inference"
+        - "Knowledge, context and expertise"
+        - "Agents and workflow"
+        - "Assurance, security and governance"
+        - "Evaluation and learning"
+        - "Prediction, science and physical AI"
+        - "Work, products and people"
+        - "Operations, economics and sovereignty"
+        - "Compute and hardware"
+    validations:
+      required: false
+  - type: dropdown
+    id: proposed_intelligence
+    attributes:
+      label: "Intelligence label"
+      options:
+        - "Use"
+        - "Trial"
+        - "Evaluate"
+        - "Wait"
+        - "Prepare"
+    validations:
+      required: false
+  - type: dropdown
+    id: proposed_enterprise
+    attributes:
+      label: "Enterprise label"
+      options:
+        - "Revisit"
+        - "Test"
+        - "Plan for"
+        - "Watch"
+    validations:
+      required: false
+  - type: textarea
+    id: judgement
+    attributes:
+      label: "Judgement"
+      description: "One or two paragraphs: what it is, what the evidence shows and what to do about it."
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: "Where it fits"
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: "Test before committing"
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: "Failure to watch"
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: "Examples"
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: "Owner"
+      description: "The role that should act on it, for example Engineering delivery lead."
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: "Sources"
+      description: "One per line: URL | title | publisher | date. Everything after the URL is optional."
+      placeholder: "https://example.org/report | Report title | Publisher | October 2026"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Why include it"
+      description: "Why The Intelligence Radar should judge it now."
+    validations:
+      required: true
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: "Interests to declare"
+      description: "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare."
+      placeholder: "None"
+    validations:
+      required: true
+  - type: dropdown
+    id: credit
+    attributes:
+      label: "Credit"
+      description: "Published contributions credit their contributor by name unless you choose otherwise."
+      options:
+        - "Credit me by name"
+        - "Do not credit me publicly"
+    validations:
+      required: false
+  - type: input
+    id: credit_name
+    attributes:
+      label: "Name to credit"
+      description: "Leave empty to use the name your account was approved with."
+    validations:
+      required: false
+  - type: textarea
+    id: prepared
+    attributes:
+      label: "Prepared by an AI assistant"
+      description: "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is."
+      render: json
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Terms"
+      options:
+        - label: "I agree that my contribution is published under CC BY 4.0, with credit as I chose above."
+          required: true
+        - label: "I follow the code of conduct in this repository."
+          required: true

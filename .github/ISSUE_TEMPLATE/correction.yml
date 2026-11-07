@@ -1,0 +1,101 @@
+name: "Correct an entry"
+description: "Fix a fact, figure, date, name or wording in an entry."
+title: "[Correction] "
+labels: ["contribution", "correction"]
+body:
+  - type: markdown
+    attributes:
+      value: "Only approved contributors' issues go to review. Not approved yet? Use **Apply to contribute** first. Every contribution is reviewed by the editors and specialist reviewers, and each decision is recorded with its reason. Approved contributions are published on https://theintelligenceradar.com/ with credit."
+  - type: input
+    id: entry
+    attributes:
+      label: "Entry"
+      description: "The entry's identifier, shown on its page, for example IR-028."
+      placeholder: "IR-028"
+    validations:
+      required: true
+  - type: dropdown
+    id: section
+    attributes:
+      label: "Part of the entry"
+      options:
+        - "Judgement"
+        - "Where it fits"
+        - "Test before committing"
+        - "Failure to watch"
+        - "Examples"
+        - "Owner"
+        - "Title"
+    validations:
+      required: false
+  - type: textarea
+    id: current
+    attributes:
+      label: "Current text"
+      description: "Copy the exact words to change from the entry's page."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: "Proposed text"
+      description: "The words to put in their place."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Why"
+      description: "Why the change is needed."
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: "Sources"
+      description: "One per line: URL | title | publisher | date. Everything after the URL is optional."
+      placeholder: "https://example.org/report | Report title | Publisher | October 2026"
+    validations:
+      required: false
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: "Interests to declare"
+      description: "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare."
+      placeholder: "None"
+    validations:
+      required: true
+  - type: dropdown
+    id: credit
+    attributes:
+      label: "Credit"
+      description: "Published contributions credit their contributor by name unless you choose otherwise."
+      options:
+        - "Credit me by name"
+        - "Do not credit me publicly"
+    validations:
+      required: false
+  - type: input
+    id: credit_name
+    attributes:
+      label: "Name to credit"
+      description: "Leave empty to use the name your account was approved with."
+    validations:
+      required: false
+  - type: textarea
+    id: prepared
+    attributes:
+      label: "Prepared by an AI assistant"
+      description: "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is."
+      render: json
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Terms"
+      options:
+        - label: "I agree that my contribution is published under CC BY 4.0, with credit as I chose above."
+          required: true
+        - label: "I follow the code of conduct in this repository."
+          required: true

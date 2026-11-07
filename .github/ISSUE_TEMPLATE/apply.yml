@@ -1,0 +1,79 @@
+name: "Apply to contribute"
+description: "Ask to become an approved contributor or specialist reviewer."
+title: "[Apply] "
+labels: ["apply-to-contribute"]
+body:
+  - type: markdown
+    attributes:
+      value: "Editors read each application and reply here. Approved people receive a token for the MCP server and can then contribute here or through their AI assistant."
+  - type: input
+    id: name
+    attributes:
+      label: "Name"
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: "Organisation"
+      description: "Your organisation, or Independent."
+    validations:
+      required: false
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Role"
+      options:
+        - "Contributor"
+        - "Specialist reviewer"
+    validations:
+      required: false
+  - type: checkboxes
+    id: areas
+    attributes:
+      label: "Areas you know best"
+      options:
+        - label: "Models and inference"
+        - label: "Knowledge, context and expertise"
+        - label: "Agents and workflow"
+        - label: "Assurance, security and governance"
+        - label: "Evaluation and learning"
+        - label: "Prediction, science and physical AI"
+        - label: "Work, products and people"
+        - label: "Operations, economics and sovereignty"
+        - label: "Compute and hardware"
+        - label: "Sector: Financial services"
+        - label: "Sector: Insurance"
+        - label: "Sector: Pharma and biotech"
+        - label: "Sector: Medtech"
+        - label: "Sector: Manufacturing"
+        - label: "Sector: Public services"
+  - type: textarea
+    id: experience
+    attributes:
+      label: "Experience"
+      description: "Your relevant work, in a few sentences."
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: "Links"
+      description: "Profiles, publications or projects that show your work."
+    validations:
+      required: false
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: "Interests to declare"
+      description: "Employers, clients or vendors you work with that The Intelligence Radar may judge."
+      placeholder: "None"
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Terms"
+      options:
+        - label: "I follow the code of conduct in this repository."
+          required: true
