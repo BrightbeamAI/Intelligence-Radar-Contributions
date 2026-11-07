@@ -66,12 +66,12 @@ const labelChange = () => ({
 
 const people = (gh) => JSON.parse(gh.files.get('people.json').text).people;
 
-test('an application to review tells the editors, by @mention', async () => {
+test('an application to be a specialist reviewer tells the editors, by @mention', async () => {
   const { opened, last } = setUp();
   const app = { title: '[Apply] Nia Newcomer', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Nia Newcomer', experience: 'Model risk.', disclosure: 'None' }) };
   assert.equal(await opened('newcomer', app), 'application');
-  assert.match(last(1), /Thank you for applying to review/);
-  assert.match(last(1), /@ed-one: a new application to review/);
+  assert.match(last(1), /Thank you for applying to be a specialist reviewer/);
+  assert.match(last(1), /@ed-one: a new application to be a specialist reviewer/);
 });
 
 test("anyone can contribute: a newcomer's contribution goes straight to review, and its approval lists them", async () => {
@@ -133,7 +133,7 @@ test('commands are read from the first line, with an optional digest', () => {
   assert.equal(parseCommand('I /approve of this'), null);
 });
 
-test('someone applies to review and is admitted as a specialist reviewer; a listed contributor can apply too', async () => {
+test('someone applies to be a specialist reviewer and is admitted; a listed contributor can apply too', async () => {
   const { gh, opened, says, last } = setUp();
   const app = { title: '[Apply] Nia Newcomer', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Nia Newcomer', affiliation: 'Example Bank', role: 'Specialist reviewer', experience: 'Ten years of model risk.', disclosure: 'None' }) };
   assert.equal(await opened('newcomer', app), 'application');
@@ -141,7 +141,7 @@ test('someone applies to review and is admitted as a specialist reviewer; a list
   assert.equal(await says(1, 'ed-one', '/admit'), 'admitted as reviewer');
   assert.deepEqual(people(gh).find((p) => p.login === 'newcomer'), { login: 'newcomer', id: 104, name: 'Nia Newcomer', role: 'reviewer', affiliation: 'Example Bank', areas: [], since: '2026-11-08', application: 1 });
   assert.match(gh.files.get('PEOPLE.md').text, /Nia Newcomer\*\* \(\[@newcomer\]/);
-  assert.match(last(1), /^Welcome, @newcomer: approved by @ed-one as a specialist reviewer[\s\S]*You will be asked to review contributions here/);
+  assert.match(last(1), /^Welcome, @newcomer: approved by @ed-one as a specialist reviewer[\s\S]*You will be asked to decide on contributions here/);
   assert.equal(gh.issues.get(1).state, 'closed');
   // a contributor already on the list applies to review
   const app2 = { title: '[Apply] Con Three', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Con Three', experience: 'Model risk.', disclosure: 'None' }) };

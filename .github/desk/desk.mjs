@@ -249,7 +249,7 @@ export class Desk {
   async onApplication(issue, parsed, events) {
     await this.labels(issue, 'apply', null);
     if (issue.state === 'closed') return 'closed application';
-    // a contributor on the list may apply to review; a specialist reviewer or an editor already reviews
+    // a contributor on the list may apply to be a specialist reviewer; a specialist reviewer or an editor already decides on contributions
     const known = this.roster.find(issue.user?.login, issue.user?.id);
     if (known && canReview(known.role)) {
       await this.notice(issue, events, 'already-listed', `@${issue.user.login} is already on the [list of people](${this.link('blob/main/PEOPLE.md')}) as ${roleName(known.role) === 'editor' ? 'an editor' : `a ${roleName(known.role)}`}.`);
@@ -257,8 +257,8 @@ export class Desk {
     }
     const eds = this.editors(issue.user?.login);
     await this.notice(issue, events, 'application-received',
-      'Thank you for applying to review. The editors read each application and reply here.'
-      + (eds.length ? `\n\n${this.mentions(eds)}: a new application to review. Approve it with \`/admit reviewer\` (or \`/admit editor\`), or answer with \`/decline <reason>\`.` : ''));
+      'Thank you for applying to be a specialist reviewer. The editors read each application and reply here.'
+      + (eds.length ? `\n\n${this.mentions(eds)}: a new application to be a specialist reviewer. Approve it with \`/admit reviewer\` (or \`/admit editor\`), or answer with \`/decline <reason>\`.` : ''));
     return 'application';
   }
 
@@ -271,7 +271,7 @@ export class Desk {
     });
     const what = role === 'editor' ? 'an editor' : `a ${roleName(role)}`;
     const reviews = canReview(role)
-      ? 'You will be asked to review contributions here: decide with `/approve`, `/changes <what to change>` or `/decline <reason>` on the issue, '
+      ? 'You will be asked to decide on contributions here: comment `/approve`, `/changes <what to change>` or `/decline <reason>` on the issue, '
         + `or from your AI assistant with The Intelligence Radar's MCP server. [CONTRIBUTING.md](${this.link('blob/main/CONTRIBUTING.md')}) explains the review policy.`
       : 'Thank you for contributing to The Intelligence Radar.';
     const list = `[list of people](${this.link('blob/main/PEOPLE.md')})`;

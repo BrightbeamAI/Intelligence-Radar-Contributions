@@ -26,7 +26,7 @@ Every complete contribution goes to review at once, whoever sends it. Reviews, c
 | <img src="assets/icon-label-change-light.png" width="32" alt=""> | **[Propose a label change](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=label-change.yml)** | A different label, with its conditions and evidence |
 | <img src="assets/icon-new-entry-light.png" width="32" alt=""> | **[Propose a new entry](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=new-entry.yml)** | A capability or practice not yet judged |
 | <img src="assets/icon-assistant-light.png" width="32" alt=""> | **[From your AI assistant](https://github.com/BrightbeamAI/intelligence-radar-mcp#install)** | The MCP server prepares, checks and sends any of the above |
-| <img src="assets/icon-apply-light.png" width="32" alt=""> | **[Apply to review](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml)** | Become a specialist reviewer: practitioners, researchers and independent experts are welcome |
+| <img src="assets/icon-apply-light.png" width="32" alt=""> | **[Apply to be a specialist reviewer](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml)** | Decide on contributions alongside the editors: practitioners, researchers and independent experts are welcome |
 
 <!-- The form links go through www.github.com on purpose: a link inside GitHub to issues/new?template=… opens a blank issue, while a full page load opens the form. -->
 

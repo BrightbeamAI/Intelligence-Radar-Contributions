@@ -2,7 +2,7 @@
 
 The editors, specialist reviewers and contributors of [The Intelligence Radar](https://theintelligenceradar.com/). Contributors are listed once a contribution of theirs is approved, unless they chose not to be credited.
 
-Anyone can contribute with the [forms](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new/choose) or from an AI assistant. To review contributions, [apply to review](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
+Anyone can contribute with the [forms](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new/choose) or from an AI assistant. Specialist reviewers decide on contributions alongside the editors: to become one, [apply to be a specialist reviewer](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
 
 ## Editors
 

@@ -1,11 +1,11 @@
-name: "Apply to review"
-description: "Ask to become a specialist reviewer or an editor of The Intelligence Radar."
+name: "Apply to be a specialist reviewer"
+description: "Ask to decide on contributions to The Intelligence Radar as a specialist reviewer, or as an editor."
 title: "[Apply] "
 labels: ["apply-to-contribute"]
 body:
   - type: markdown
     attributes:
-      value: "Specialist reviewers review contributions alongside the editors. Anyone can contribute without applying: use the other forms. The editors read each application and reply here."
+      value: "Specialist reviewers decide on contributions alongside the editors: they approve, edit, ask for changes or decline, each with a reason. Contributing needs no application, and that includes reviewing an entry: use the other forms. The editors read each application and reply here."
   - type: input
     id: name
     attributes:

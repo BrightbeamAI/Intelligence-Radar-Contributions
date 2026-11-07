@@ -4,7 +4,7 @@ The reviewers judge each contribution on its evidence. These points help them de
 
 ## Before you start
 
-- Anyone can contribute, with the forms here or from an AI assistant, and every complete contribution goes to review at once. Once a contribution of yours is approved, you join the [list of people](PEOPLE.md) as a contributor, unless you chose not to be credited. To review contributions yourself, [apply to review](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
+- Anyone can contribute, with the forms here or from an AI assistant, and every complete contribution goes to review at once. Once a contribution of yours is approved, you join the [list of people](PEOPLE.md) as a contributor, unless you chose not to be credited. To decide on contributions yourself, alongside the editors, [apply to be a specialist reviewer](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
 - Read the entry on [TheIntelligenceRadar.com](https://theintelligenceradar.com/) as it stands now. Each entry page links to the forms with the entry filled in.
 - One contribution, one change. Send separate issues for separate points.
 - Declare any interest: a vendor, client, employer or product named in the entry or in your sources. Write None if there is nothing to declare.
