@@ -5,7 +5,7 @@ labels: ["apply-to-contribute"]
 body:
   - type: markdown
     attributes:
-      value: "Editors read each application and reply here. Approved people receive a token for the MCP server and can then contribute here or through their AI assistant."
+      value: "Editors read each application and reply here. Once approved, your GitHub account is added to the list of people, and everything you send here or from your AI assistant is checked against it automatically."
   - type: input
     id: name
     attributes:
@@ -76,4 +76,6 @@ body:
       label: "Terms"
       options:
         - label: "I follow the code of conduct in this repository."
+          required: true
+        - label: "List my name, organisation and GitHub account on the public list of people if I am approved."
           required: true

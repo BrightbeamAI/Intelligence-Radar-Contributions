@@ -1,0 +1,873 @@
+{
+ "repo": "BrightbeamAI/Intelligence-Radar-Contributions",
+ "dimensions": [
+  "Models and inference",
+  "Knowledge, context and expertise",
+  "Agents and workflow",
+  "Assurance, security and governance",
+  "Evaluation and learning",
+  "Prediction, science and physical AI",
+  "Work, products and people",
+  "Operations, economics and sovereignty",
+  "Compute and hardware"
+ ],
+ "intelligence": [
+  "Use",
+  "Trial",
+  "Evaluate",
+  "Wait",
+  "Prepare"
+ ],
+ "enterprise": [
+  "Revisit",
+  "Test",
+  "Plan for",
+  "Watch"
+ ],
+ "sectors": {
+  "financial-services": "Financial services",
+  "insurance": "Insurance",
+  "pharma-and-biotech": "Pharma and biotech",
+  "medtech": "Medtech",
+  "manufacturing": "Manufacturing",
+  "public-services": "Public services"
+ },
+ "forms": [
+  {
+   "file": "review.yml",
+   "kind": "review",
+   "name": "Review an entry",
+   "title": "[Review] ",
+   "description": "Tell the editors whether an entry makes sense, reads well and carries the right labels.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "entry",
+     "label": "Entry",
+     "to": "target.entry",
+     "description": "The entry's identifier, shown on its page, for example IR-028.",
+     "placeholder": "IR-028",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "makes_sense",
+     "label": "Does it make sense?",
+     "to": "rating:makes_sense",
+     "options": [
+      "Yes",
+      "Partly",
+      "No"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "easy_to_read",
+     "label": "Is it easy to read?",
+     "to": "rating:easy_to_read",
+     "options": [
+      "Yes",
+      "Partly",
+      "No"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "intelligence_label",
+     "label": "Is the intelligence label reasonable?",
+     "to": "rating:intelligence_label",
+     "options": [
+      "Yes",
+      "No",
+      "Not sure"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_intelligence",
+     "label": "Intelligence label you would give",
+     "to": "label:intelligence",
+     "options": [
+      "No change",
+      "Use",
+      "Trial",
+      "Evaluate",
+      "Wait",
+      "Prepare"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "enterprise_label",
+     "label": "Is the enterprise label reasonable?",
+     "to": "rating:enterprise_label",
+     "options": [
+      "Yes",
+      "No",
+      "Not sure"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_enterprise",
+     "label": "Enterprise label you would give",
+     "to": "label:enterprise",
+     "options": [
+      "No change",
+      "Revisit",
+      "Test",
+      "Plan for",
+      "Watch"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "comments",
+     "label": "Your review",
+     "to": "summary",
+     "description": "What works, what does not, and why.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "suggested_wording",
+     "label": "Suggested wording",
+     "to": "review.suggested_wording",
+     "description": "Wording you would like to read instead, if any.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "corrections",
+     "label": "Corrections",
+     "to": "review.corrections",
+     "description": "Anything wrong, missing or out of date: a fact, figure, date, product or source, with a link to your evidence.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "credit",
+     "label": "Credit",
+     "to": "credit",
+     "options": [
+      "Credit me by name",
+      "Do not credit me publicly"
+     ],
+     "description": "Published contributions credit their contributor by name unless you choose otherwise.",
+     "required": false
+    },
+    {
+     "type": "input",
+     "id": "credit_name",
+     "label": "Name to credit",
+     "to": "credit.name",
+     "description": "Leave empty to use your name on the list of people.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "prepared",
+     "label": "Prepared by an AI assistant",
+     "to": "prepared",
+     "description": "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is.",
+     "placeholder": "",
+     "required": false,
+     "render": "json"
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "options": [
+      "I agree that my contribution is published under CC BY 4.0, with credit as I chose above.",
+      "I follow the code of conduct in this repository."
+     ],
+     "required": true
+    }
+   ]
+  },
+  {
+   "file": "correction.yml",
+   "kind": "correction",
+   "name": "Correct an entry",
+   "title": "[Correction] ",
+   "description": "Fix a fact, figure, date, name or wording in an entry.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "entry",
+     "label": "Entry",
+     "to": "target.entry",
+     "description": "The entry's identifier, shown on its page, for example IR-028.",
+     "placeholder": "IR-028",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "section",
+     "label": "Part of the entry",
+     "to": "edits[0].section",
+     "options": [
+      "Judgement",
+      "Where it fits",
+      "Test before committing",
+      "Failure to watch",
+      "Examples",
+      "Owner",
+      "Title"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "current",
+     "label": "Current text",
+     "to": "edits[0].find",
+     "description": "Copy the exact words to change from the entry's page.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "proposed",
+     "label": "Proposed text",
+     "to": "edits[0].replace",
+     "description": "The words to put in their place.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "why",
+     "label": "Why",
+     "to": "summary",
+     "description": "Why the change is needed.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "sources",
+     "label": "Sources",
+     "to": "sources",
+     "description": "One per line: URL | title | publisher | date. Everything after the URL is optional.",
+     "placeholder": "https://example.org/report | Report title | Publisher | October 2026",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "credit",
+     "label": "Credit",
+     "to": "credit",
+     "options": [
+      "Credit me by name",
+      "Do not credit me publicly"
+     ],
+     "description": "Published contributions credit their contributor by name unless you choose otherwise.",
+     "required": false
+    },
+    {
+     "type": "input",
+     "id": "credit_name",
+     "label": "Name to credit",
+     "to": "credit.name",
+     "description": "Leave empty to use your name on the list of people.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "prepared",
+     "label": "Prepared by an AI assistant",
+     "to": "prepared",
+     "description": "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is.",
+     "placeholder": "",
+     "required": false,
+     "render": "json"
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "options": [
+      "I agree that my contribution is published under CC BY 4.0, with credit as I chose above.",
+      "I follow the code of conduct in this repository."
+     ],
+     "required": true
+    }
+   ]
+  },
+  {
+   "file": "evidence.yml",
+   "kind": "evidence",
+   "name": "Add evidence",
+   "title": "[Evidence] ",
+   "description": "Bring evidence for, against or qualifying an entry's judgement.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "entry",
+     "label": "Entry",
+     "to": "target.entry",
+     "description": "The entry's identifier, shown on its page, for example IR-028.",
+     "placeholder": "IR-028",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "relation",
+     "label": "How the evidence bears on the entry",
+     "to": "relation",
+     "options": [
+      "Supports it",
+      "Challenges it",
+      "Qualifies it"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "sources",
+     "label": "Sources",
+     "to": "sources",
+     "description": "One per line: URL | title | publisher | date. Everything after the URL is optional.",
+     "placeholder": "https://example.org/report | Report title | Publisher | October 2026",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "claim",
+     "label": "The claim it bears on",
+     "to": "claim",
+     "description": "Quote or describe the part of the entry the evidence concerns.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "shows",
+     "label": "What it shows",
+     "to": "summary",
+     "description": "What the evidence establishes, its method and its limits.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "credit",
+     "label": "Credit",
+     "to": "credit",
+     "options": [
+      "Credit me by name",
+      "Do not credit me publicly"
+     ],
+     "description": "Published contributions credit their contributor by name unless you choose otherwise.",
+     "required": false
+    },
+    {
+     "type": "input",
+     "id": "credit_name",
+     "label": "Name to credit",
+     "to": "credit.name",
+     "description": "Leave empty to use your name on the list of people.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "prepared",
+     "label": "Prepared by an AI assistant",
+     "to": "prepared",
+     "description": "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is.",
+     "placeholder": "",
+     "required": false,
+     "render": "json"
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "options": [
+      "I agree that my contribution is published under CC BY 4.0, with credit as I chose above.",
+      "I follow the code of conduct in this repository."
+     ],
+     "required": true
+    }
+   ]
+  },
+  {
+   "file": "label-change.yml",
+   "kind": "label-change",
+   "name": "Propose a label change",
+   "title": "[Label change] ",
+   "description": "Propose a different intelligence or enterprise label for an entry, with the evidence for it.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "entry",
+     "label": "Entry",
+     "to": "target.entry",
+     "description": "The entry's identifier, shown on its page, for example IR-028.",
+     "placeholder": "IR-028",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_intelligence",
+     "label": "Intelligence label",
+     "to": "label:intelligence",
+     "options": [
+      "No change",
+      "Use",
+      "Trial",
+      "Evaluate",
+      "Wait",
+      "Prepare"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_enterprise",
+     "label": "Enterprise label",
+     "to": "label:enterprise",
+     "options": [
+      "No change",
+      "Revisit",
+      "Test",
+      "Plan for",
+      "Watch"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "conditions",
+     "label": "Conditions",
+     "to": "conditions",
+     "description": "Where, and under what conditions, the proposed labels hold.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "why",
+     "label": "Why",
+     "to": "summary",
+     "description": "The case for the change.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "sources",
+     "label": "Sources",
+     "to": "sources",
+     "description": "One per line: URL | title | publisher | date. Everything after the URL is optional.",
+     "placeholder": "https://example.org/report | Report title | Publisher | October 2026",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "reverse_if",
+     "label": "What would change this judgement",
+     "to": "reverse_if",
+     "description": "The observation that would make the proposed labels wrong.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "credit",
+     "label": "Credit",
+     "to": "credit",
+     "options": [
+      "Credit me by name",
+      "Do not credit me publicly"
+     ],
+     "description": "Published contributions credit their contributor by name unless you choose otherwise.",
+     "required": false
+    },
+    {
+     "type": "input",
+     "id": "credit_name",
+     "label": "Name to credit",
+     "to": "credit.name",
+     "description": "Leave empty to use your name on the list of people.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "prepared",
+     "label": "Prepared by an AI assistant",
+     "to": "prepared",
+     "description": "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is.",
+     "placeholder": "",
+     "required": false,
+     "render": "json"
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "options": [
+      "I agree that my contribution is published under CC BY 4.0, with credit as I chose above.",
+      "I follow the code of conduct in this repository."
+     ],
+     "required": true
+    }
+   ]
+  },
+  {
+   "file": "new-entry.yml",
+   "kind": "new-entry",
+   "name": "Propose a new entry",
+   "title": "[New entry] ",
+   "description": "Propose a capability or practice The Intelligence Radar does not yet judge.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "entry_title",
+     "label": "Title",
+     "to": "entry.title",
+     "description": "The capability or practice, in a few words.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "dimension",
+     "label": "Dimension",
+     "to": "dimension_name",
+     "options": [
+      "Models and inference",
+      "Knowledge, context and expertise",
+      "Agents and workflow",
+      "Assurance, security and governance",
+      "Evaluation and learning",
+      "Prediction, science and physical AI",
+      "Work, products and people",
+      "Operations, economics and sovereignty",
+      "Compute and hardware"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_intelligence",
+     "label": "Intelligence label",
+     "to": "label:entry.intelligence",
+     "options": [
+      "Use",
+      "Trial",
+      "Evaluate",
+      "Wait",
+      "Prepare"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "proposed_enterprise",
+     "label": "Enterprise label",
+     "to": "label:entry.enterprise",
+     "options": [
+      "Revisit",
+      "Test",
+      "Plan for",
+      "Watch"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "judgement",
+     "label": "Judgement",
+     "to": "entry.judgement",
+     "description": "One or two paragraphs: what it is, what the evidence shows and what to do about it.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "where",
+     "label": "Where it fits",
+     "to": "entry.where",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "test",
+     "label": "Test before committing",
+     "to": "entry.test",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "failure",
+     "label": "Failure to watch",
+     "to": "entry.failure",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "examples",
+     "label": "Examples",
+     "to": "entry.examples",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "input",
+     "id": "owner",
+     "label": "Owner",
+     "to": "entry.owner",
+     "description": "The role that should act on it, for example Engineering delivery lead.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "sources",
+     "label": "Sources",
+     "to": "sources",
+     "description": "One per line: URL | title | publisher | date. Everything after the URL is optional.",
+     "placeholder": "https://example.org/report | Report title | Publisher | October 2026",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "why",
+     "label": "Why include it",
+     "to": "summary",
+     "description": "Why The Intelligence Radar should judge it now.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Any tie to a vendor, product or organisation named in this entry or in your sources. Write None if there is nothing to declare.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "dropdown",
+     "id": "credit",
+     "label": "Credit",
+     "to": "credit",
+     "options": [
+      "Credit me by name",
+      "Do not credit me publicly"
+     ],
+     "description": "Published contributions credit their contributor by name unless you choose otherwise.",
+     "required": false
+    },
+    {
+     "type": "input",
+     "id": "credit_name",
+     "label": "Name to credit",
+     "to": "credit.name",
+     "description": "Leave empty to use your name on the list of people.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "prepared",
+     "label": "Prepared by an AI assistant",
+     "to": "prepared",
+     "description": "Filled in when an AI assistant prepared this contribution with The Intelligence Radar's MCP server. Leave it as it is.",
+     "placeholder": "",
+     "required": false,
+     "render": "json"
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "options": [
+      "I agree that my contribution is published under CC BY 4.0, with credit as I chose above.",
+      "I follow the code of conduct in this repository."
+     ],
+     "required": true
+    }
+   ]
+  },
+  {
+   "file": "apply.yml",
+   "kind": null,
+   "name": "Apply to contribute",
+   "title": "[Apply] ",
+   "description": "Ask to become an approved contributor or specialist reviewer.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "name",
+     "label": "Name",
+     "to": "name",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "input",
+     "id": "affiliation",
+     "label": "Organisation",
+     "to": "affiliation",
+     "description": "Your organisation, or Independent.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "role",
+     "label": "Role",
+     "to": "role",
+     "options": [
+      "Contributor",
+      "Specialist reviewer"
+     ],
+     "description": "",
+     "required": false
+    },
+    {
+     "type": "checkboxes",
+     "id": "areas",
+     "label": "Areas you know best",
+     "to": "areas",
+     "required": false,
+     "options": [
+      "Models and inference",
+      "Knowledge, context and expertise",
+      "Agents and workflow",
+      "Assurance, security and governance",
+      "Evaluation and learning",
+      "Prediction, science and physical AI",
+      "Work, products and people",
+      "Operations, economics and sovereignty",
+      "Compute and hardware",
+      "Sector: Financial services",
+      "Sector: Insurance",
+      "Sector: Pharma and biotech",
+      "Sector: Medtech",
+      "Sector: Manufacturing",
+      "Sector: Public services"
+     ]
+    },
+    {
+     "type": "textarea",
+     "id": "experience",
+     "label": "Experience",
+     "to": "experience",
+     "description": "Your relevant work, in a few sentences.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "links",
+     "label": "Links",
+     "to": "links",
+     "description": "Profiles, publications or projects that show your work.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Employers, clients or vendors you work with that The Intelligence Radar may judge.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "required": true,
+     "options": [
+      "I follow the code of conduct in this repository.",
+      "List my name, organisation and GitHub account on the public list of people if I am approved."
+     ]
+    }
+   ]
+  }
+ ]
+}

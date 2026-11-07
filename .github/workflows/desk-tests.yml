@@ -1,0 +1,24 @@
+# The review desk's own tests, on every change to its code.
+name: Review desk tests
+
+on:
+  push:
+    paths: ['.github/desk/**']
+  pull_request:
+    paths: ['.github/desk/**']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test .github/desk/test/*.test.mjs

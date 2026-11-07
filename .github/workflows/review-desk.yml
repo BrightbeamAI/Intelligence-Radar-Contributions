@@ -1,0 +1,39 @@
+# The review desk: checks each contribution against the list of people and the contribution rules,
+# takes decisions from comments (/approve, /changes, /decline, /withdraw, /published, /admit, /role,
+# /remove), applies the review policy and keeps labels in step. Code: .github/desk/. No secrets needed.
+name: Review desk
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  issue_comment:
+    types: [created]
+  push:
+    branches: [main]
+    paths: [people.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # people.json and PEOPLE.md, when editors admit, change or remove people
+  issues: write     # labels, comments, closing
+
+concurrency:
+  group: review-desk-${{ github.event.issue.number || 'people' }}
+  cancel-in-progress: false
+
+jobs:
+  desk:
+    if: ${{ !github.event.issue.pull_request && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Review desk
+        run: node .github/desk/run.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

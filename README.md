@@ -14,7 +14,7 @@
   <img src="assets/workflow-light.png" alt="How a contribution becomes part of The Intelligence Radar: 1 contribute, from an AI assistant or a GitHub form; 2 recorded in CHAP by the review desk; 3 reviewed by editors and specialist reviewers, who approve, edit, ask for changes or decline; 4 published on the website, in the Volume and in the MCP server; 5 credited. When changes are asked for, the contributor revises and sends it again.">
 </picture>
 
-Reviews, corrections and evidence need one approval. Label changes and new entries need two, one of them from an editor. Every decision is recorded in [CHAP](https://github.com/BrightbeamAI/chap) and posted on the issue with its reason.
+Contributions from the people on the [list of people](PEOPLE.md) go to review automatically. Reviews, corrections and evidence need one approval from an editor or a specialist reviewer; label changes and new entries need an editor's. Every decision is posted on the issue with its reason and kept in a private [CHAP](https://github.com/BrightbeamAI/chap) record.
 
 ## Contribute
 
@@ -32,7 +32,7 @@ Each entry's page on the website links to these forms with the entry filled in.
 
 ## Where your issue stands
 
-`in-review` → `approved` → `published` (closed). Also `changes-requested` (edit the issue to revise it), `needs-info` (fix the form), `needs-approval` (apply first) and `declined` (with the reason).
+`in-review` → `approved` → `published` (closed). Also `changes-requested` (edit the issue to revise it), `needs-info` (fix the form), `needs-approval` (apply first) and `declined` (with the reason). Editors and specialist reviewers decide with commands in comments, listed in the [guide](CONTRIBUTING.md#for-editors-and-specialist-reviewers).
 
 ---
 
