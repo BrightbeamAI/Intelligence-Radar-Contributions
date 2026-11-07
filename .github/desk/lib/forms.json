@@ -771,9 +771,9 @@
   {
    "file": "apply.yml",
    "kind": null,
-   "name": "Apply to review",
+   "name": "Apply to be a specialist reviewer",
    "title": "[Apply] ",
-   "description": "Ask to become a specialist reviewer or an editor of The Intelligence Radar.",
+   "description": "Ask to decide on contributions to The Intelligence Radar as a specialist reviewer, or as an editor.",
    "fields": [
     {
      "type": "input",
