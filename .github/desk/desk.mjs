@@ -236,7 +236,7 @@ export class Desk {
     const head = {
       submitted: `Received: ${kindName(kind).toLowerCase()} from @${author}`
         + (listedRole ? `, on the list of people as ${roleName(listedRole) === 'editor' ? 'an editor' : `a ${roleName(listedRole)}`}.` : '. Thank you for contributing.')
-        + ` It is complete, so it is now with the editors and specialist reviewers, and each decision will be posted here with its reason.${credit}`,
+        + ` It is complete, so it is now with the editors and specialist reviewers, who aim to decide within three working days; each decision will be posted here with its reason.${credit}`,
       revised: `Version ${n} received from @${author}. Approvals of earlier versions no longer count.`,
       edited: `Version ${n}: edited by @${by} (${roleName(role)}), which counts as their approval of it.`,
     }[cause];
