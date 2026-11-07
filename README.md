@@ -18,7 +18,7 @@ Reviews, corrections and evidence need one approval. Label changes and new entri
 
 ## Contribute
 
-| | | |
+| | Contribution | What it is for |
 |:-:|---|---|
 | <img src="assets/icon-review-light.png" width="32" alt=""> | **[Review an entry](../../issues/new?template=review.yml)** | Does it make sense, read well and carry the right labels? |
 | <img src="assets/icon-correction-light.png" width="32" alt=""> | **[Correct an entry](../../issues/new?template=correction.yml)** | A fact, figure, date or wording |
