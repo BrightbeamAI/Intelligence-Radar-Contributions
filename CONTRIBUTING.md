@@ -30,7 +30,7 @@ A label change needs the conditions under which the new label holds, and what wo
 
 ## After you send it
 
-The review desk replies on the issue within a minute or so: it checks the form against the rules, labels the issue `in-review` and asks the reviewers. Each decision is posted with its reason. To revise, edit the issue: the new version goes back to the reviewers automatically, and approvals of earlier versions no longer count. To withdraw it, comment `/withdraw`. Approved contributions are published with the next publication and credited on the website.
+Within a minute, the review desk (an automated check on GitHub) confirms receipt on the issue: it checks the form against the rules, labels the issue `in-review` and asks the reviewers. The editors and specialist reviewers aim to decide within three working days, and each decision is posted on the issue with its reason. To revise, edit the issue: the new version goes back to the reviewers automatically, and approvals of earlier versions no longer count. To withdraw it, comment `/withdraw`. Approved contributions are published with the next publication and credited on the website.
 
 From an AI assistant, The Intelligence Radar's MCP server does the same: `sign_in_with_github` once, then `prepare_contribution` and `submit_contribution`.
 
