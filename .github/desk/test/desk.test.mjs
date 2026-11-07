@@ -64,34 +64,62 @@ const labelChange = () => ({
   }),
 });
 
-test('an application tells the editors, by @mention', async () => {
+const people = (gh) => JSON.parse(gh.files.get('people.json').text).people;
+
+test('an application to review tells the editors, by @mention', async () => {
   const { opened, last } = setUp();
   const app = { title: '[Apply] Nia Newcomer', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Nia Newcomer', experience: 'Model risk.', disclosure: 'None' }) };
   assert.equal(await opened('newcomer', app), 'application');
-  assert.match(last(1), /@ed-one: a new application/);
+  assert.match(last(1), /Thank you for applying to review/);
+  assert.match(last(1), /@ed-one: a new application to review/);
 });
 
-test("a newcomer's first contribution: the editors are told, and /admit on it lists them and sends it to the reviewers", async () => {
+test("anyone can contribute: a newcomer's contribution goes straight to review, and its approval lists them", async () => {
   const { gh, opened, says, state, last } = setUp();
-  assert.equal(await opened('newcomer', correction()), 'needs approval');
-  assert.match(last(1), /@ed-one: a contribution from someone new\. To approve @newcomer/);
-  assert.equal(await says(1, 'rev-two', '/admit contributor'), 'refused');
-  assert.equal(await says(1, 'ed-one', '/admit contributor'), 'admitted as contributor');
-  const listed = JSON.parse(gh.files.get('people.json').text).people.find((p) => p.login === 'newcomer');
-  assert.equal(listed.role, 'contributor');
-  assert.equal(listed.application, 1);
-  assert.match(gh.files.get('PEOPLE.md').text, /@newcomer/);
-  assert.equal(state(1, 'correction').status, 'in-review');
-  assert.deepEqual(gh.labelsOf(1), ['contribution', 'correction', 'in-review']);
+  assert.equal(await opened('newcomer', correction({ credit_name: 'Nia Newcomer' })), 'in-review');
+  assert.match(last(1), /^Received: correction from @newcomer\. Thank you for contributing\. It is complete/);
+  assert.match(last(1), /Once a contribution of yours is approved, you join the \[list of people\]/);
   assert.match(last(1), /For review: @ed-one @rev-two\./);
-  assert.equal(await says(1, 'ed-one', '/admit reviewer'), 'refused');
+  assert.deepEqual(gh.labelsOf(1), ['contribution', 'correction', 'in-review']);
+  assert.equal(state(1, 'correction').current.role, 'contributor');
+  assert.ok(!people(gh).some((p) => p.login === 'newcomer'), 'listed only once a contribution is approved');
+  assert.equal(await says(1, 'newcomer', '/approve'), 'refused');
+  assert.equal(await says(1, 'rev-two', '/approve Matches the announcement.'), 'approved');
+  assert.match(last(1), /^Thank you, @newcomer: with this contribution approved, you are now on the \[list of people\]/);
+  assert.deepEqual(eventsOf(gh.commentsOn(1), BOT).filter((e) => e.e === 'listed').map(({ login, role, by, name }) => ({ login, role, by, name })),
+    [{ login: 'newcomer', role: 'contributor', by: 'rev-two', name: 'Nia Newcomer' }]);
+  assert.deepEqual(people(gh).find((p) => p.login === 'newcomer'),
+    { login: 'newcomer', id: 104, name: 'Nia Newcomer', role: 'contributor', areas: [], since: '2026-11-08', contribution: 1 });
+  assert.match(gh.files.get('PEOPLE.md').text, /Nia Newcomer\*\* \(\[@newcomer\]/);
+  // from now on the list names them, and a second approval lists no one again
+  assert.equal(await opened('newcomer', correction()), 'in-review');
+  assert.match(last(2), /^Received: correction from @newcomer, on the list of people as a contributor\./);
+  assert.equal(await says(2, 'ed-one', '/approve'), 'approved');
+  assert.match(last(2), /\*\*Approved\.\*\*/);
+  assert.equal(people(gh).filter((p) => p.login === 'newcomer').length, 1);
 });
 
-test("an editor can turn a newcomer down on their contribution; a label change asks the editors", async () => {
+test('a contributor who chose not to be credited is not listed; an editor edit that approves lists the contributor', async () => {
+  const { gh, opened, edited, says, last } = setUp();
+  assert.equal(await opened('newcomer', correction({ credit: 'Do not credit me publicly' })), 'in-review');
+  assert.match(last(1), /As you asked, you will not be credited publicly\./);
+  assert.equal(await says(1, 'rev-two', '/approve'), 'approved');
+  assert.ok(!people(gh).some((p) => p.login === 'newcomer'));
+  gh.user('first-timer', 106);
+  await opened('first-timer', correction());
+  const body = gh.issues.get(2).body.replace('(AAIF)', '(the AAIF)');
+  assert.equal(await edited(2, 'ed-one', { body }), 'approved');
+  assert.match(last(2), /^Thank you, @first-timer/);
+  assert.equal(people(gh).find((p) => p.login === 'first-timer').role, 'contributor');
+});
+
+test('an editor closes an incomplete contribution before review; a label change asks the editors', async () => {
   const { gh, opened, says, last } = setUp();
-  await opened('newcomer', correction());
-  assert.equal(await says(1, 'ed-one', '/decline Outside the scope of The Intelligence Radar.'), 'contributor not approved');
+  assert.equal(await opened('newcomer', correction({ why: 'Too short' })), 'needs information');
+  assert.equal(await says(1, 'rev-two', '/decline Outside the scope.'), 'refused');
+  assert.equal(await says(1, 'ed-one', '/decline Outside the scope of The Intelligence Radar.'), 'closed before review');
   assert.equal(gh.issues.get(1).state_reason, 'not_planned');
+  assert.match(last(1), /^Closed by @ed-one \(editor\) before review/);
   await opened('cont-three', labelChange());
   assert.match(last(2), /For review: @ed-one\.$/m);
   await says(2, 'rev-two', '/approve');
@@ -105,21 +133,24 @@ test('commands are read from the first line, with an optional digest', () => {
   assert.equal(parseCommand('I /approve of this'), null);
 });
 
-test('someone not on the list applies, is admitted, and their waiting contribution goes to review', async () => {
-  const { gh, opened, says, state, last } = setUp();
-  assert.equal(await opened('newcomer', correction()), 'needs approval');
-  assert.deepEqual(gh.labelsOf(1), ['contribution', 'correction', 'needs-approval']);
-  assert.match(last(1), /not on it yet/);
+test('someone applies to review and is admitted as a specialist reviewer; a listed contributor can apply too', async () => {
+  const { gh, opened, says, last } = setUp();
   const app = { title: '[Apply] Nia Newcomer', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Nia Newcomer', affiliation: 'Example Bank', role: 'Specialist reviewer', experience: 'Ten years of model risk.', disclosure: 'None' }) };
   assert.equal(await opened('newcomer', app), 'application');
-  assert.equal(await says(2, 'rev-two', '/admit reviewer'), 'refused');
-  assert.equal(await says(2, 'ed-one', '/admit reviewer'), 'admitted as reviewer');
-  const people = JSON.parse(gh.files.get('people.json').text).people;
-  assert.deepEqual(people.find((p) => p.login === 'newcomer'), { login: 'newcomer', id: 104, name: 'Nia Newcomer', role: 'reviewer', affiliation: 'Example Bank', areas: [], since: '2026-11-08', application: 2 });
+  assert.equal(await says(1, 'rev-two', '/admit'), 'refused');
+  assert.equal(await says(1, 'ed-one', '/admit'), 'admitted as reviewer');
+  assert.deepEqual(people(gh).find((p) => p.login === 'newcomer'), { login: 'newcomer', id: 104, name: 'Nia Newcomer', role: 'reviewer', affiliation: 'Example Bank', areas: [], since: '2026-11-08', application: 1 });
   assert.match(gh.files.get('PEOPLE.md').text, /Nia Newcomer\*\* \(\[@newcomer\]/);
-  assert.equal(gh.issues.get(2).state, 'closed');
-  assert.equal(state(1, 'correction').status, 'in-review');
-  assert.deepEqual(gh.labelsOf(1), ['contribution', 'correction', 'in-review']);
+  assert.match(last(1), /^Welcome, @newcomer: approved by @ed-one as a specialist reviewer[\s\S]*You will be asked to review contributions here/);
+  assert.equal(gh.issues.get(1).state, 'closed');
+  // a contributor already on the list applies to review
+  const app2 = { title: '[Apply] Con Three', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Con Three', experience: 'Model risk.', disclosure: 'None' }) };
+  assert.equal(await opened('cont-three', app2), 'application');
+  assert.equal(await says(2, 'ed-one', '/admit reviewer'), 'admitted as reviewer');
+  assert.match(last(2), /^@cont-three is now a specialist reviewer on the \[list of people\]\([^)]*\), approved by @ed-one\./);
+  assert.equal(people(gh).find((p) => p.login === 'cont-three').role, 'reviewer');
+  // a specialist reviewer who applies is told they are listed already
+  assert.equal(await opened('rev-two', { ...app2, title: '[Apply] Rev Two' }), 'already listed');
 });
 
 test('one approval publishes a correction; the contributor cannot approve their own', async () => {

@@ -1,10 +1,19 @@
 {
- "note": "The people approved to contribute to The Intelligence Radar, with their role. The review desk checks every contribution against this list. Editors add and change people with /admit, /role and /remove (see CONTRIBUTING.md); PEOPLE.md is written from this file.",
+ "note": "The list of people of The Intelligence Radar, with their role: the editors, the specialist reviewers, and the contributors, each listed once a contribution of theirs is approved. Anyone can contribute; editors and specialist reviewers review. Editors add and change people with /admit, /role and /remove (see CONTRIBUTING.md); PEOPLE.md is written from this file.",
  "people": [
   {
    "login": "brightbeamarsalan",
    "id": 270347353,
-   "name": "Dr Arsalan Shahid",
+   "name": "Arsalan Shahid",
+   "role": "editor",
+   "affiliation": "Brightbeam",
+   "areas": [],
+   "since": "2026-11-07"
+  },
+  {
+   "login": "scott-brightbeam",
+   "id": 253908457,
+   "name": "Scott Wilkinson",
    "role": "editor",
    "affiliation": "Brightbeam",
    "areas": [],

@@ -4,7 +4,7 @@ The reviewers judge each contribution on its evidence. These points help them de
 
 ## Before you start
 
-- Contributions from the GitHub accounts on the [list of people](PEOPLE.md) go to review at once. Not on it yet? [Apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml), or simply send your first contribution: the editors are told, and when one approves you, you join the list and it goes to review.
+- Anyone can contribute, with the forms here or from an AI assistant, and every complete contribution goes to review at once. Once a contribution of yours is approved, you join the [list of people](PEOPLE.md) as a contributor, unless you chose not to be credited. To review contributions yourself, [apply to review](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml).
 - Read the entry on [TheIntelligenceRadar.com](https://theintelligenceradar.com/) as it stands now. Each entry page links to the forms with the entry filled in.
 - One contribution, one change. Send separate issues for separate points.
 - Declare any interest: a vendor, client, employer or product named in the entry or in your sources. Write None if there is nothing to declare.
@@ -30,7 +30,7 @@ A label change needs the conditions under which the new label holds, and what wo
 
 ## After you send it
 
-The review desk replies on the issue within a minute or so: it checks your account against the list of people and the form against the rules, then labels the issue `in-review`. Each decision is posted with its reason. To revise, edit the issue: the new version goes back to the reviewers automatically, and approvals of earlier versions no longer count. To withdraw it, comment `/withdraw`. Approved contributions are published with the next publication and credited on the website.
+The review desk replies on the issue within a minute or so: it checks the form against the rules, labels the issue `in-review` and asks the reviewers. Each decision is posted with its reason. To revise, edit the issue: the new version goes back to the reviewers automatically, and approvals of earlier versions no longer count. To withdraw it, comment `/withdraw`. Approved contributions are published with the next publication and credited on the website.
 
 From an AI assistant, The Intelligence Radar's MCP server does the same: `sign_in_with_github` once, then `prepare_contribution` and `submit_contribution`.
 
@@ -46,8 +46,9 @@ Decide by commenting on the issue. The command goes on the first line; the reaso
 | `/edit <reason>` and the whole edited contribution in a ` ```json ` block | The same, while it is in review | Makes a new version, shown on the issue; counts as your approval of it |
 | `/withdraw <reason>` | The contributor | Withdraws it before a final decision |
 | `/published <release>` | Editors | Records that an approved contribution is published, and closes the issue |
-| `/admit contributor`, `/admit reviewer` or `/admit editor` | Editors, on an application or on a first contribution from someone not on the list | Adds the person to the list of people; their waiting contributions go to review at once |
-| `/decline <reason>` | Editors, on an application or on such a first contribution | Turns the person down and closes the issue |
+| `/admit reviewer` or `/admit editor` | Editors, on an application to review | Adds the applicant to the list of people with that role, and closes the application |
+| `/admit contributor`, `/admit reviewer` or `/admit editor` | Editors, on a contribution | Lists its contributor with that role |
+| `/decline <reason>` | Editors, on an application, or on a contribution that never became complete | Turns the application down, or closes the contribution before review |
 | `/role @login <role>` and `/remove @login <reason>` | Editors, on any issue | Changes a person's role, or takes them off the list |
 
-The review desk tells you by @mention when something needs you: editors when someone applies or sends a first contribution without being on the list, and the editors and specialist reviewers asked to review each contribution. Reviews, corrections and evidence need one approval from an editor or a specialist reviewer. Label changes and new entries need an editor's approval. A command may carry the digest of the version you read (`/approve sha256:1a2b3c4d … <reason>`): the desk then refuses it if the contribution has changed since.
+Contributors join the list of people by themselves: the review desk lists a contributor once a contribution of theirs is approved, unless they chose not to be credited. It tells you by @mention when something needs you: the editors when someone applies to review, and the editors and specialist reviewers asked to review each contribution. Reviews, corrections and evidence need one approval from an editor or a specialist reviewer. Label changes and new entries need an editor's approval. A command may carry the digest of the version you read (`/approve sha256:1a2b3c4d … <reason>`): the desk then refuses it if the contribution has changed since.
