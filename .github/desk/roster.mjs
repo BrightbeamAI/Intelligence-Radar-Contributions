@@ -74,8 +74,8 @@ export function peoplePage(roster, repo) {
       + 'Contributors are listed once a contribution of theirs is approved, unless they chose not to be credited.',
     '',
     // through www.github.com: a full page load opens the form, where a link inside GitHub would open a blank issue
-    `Anyone can contribute with the [forms](https://github.com/${repo}/issues/new/choose) or from an AI assistant. `
-      + `To review contributions, [apply to review](https://www.github.com/${repo}/issues/new?template=apply.yml).`,
+    `Anyone can contribute with the [forms](https://github.com/${repo}/issues/new/choose) or from an AI assistant. Specialist reviewers decide on `
+      + `contributions alongside the editors: to become one, [apply to be a specialist reviewer](https://www.github.com/${repo}/issues/new?template=apply.yml).`,
     '',
   ];
   for (const role of order) {
