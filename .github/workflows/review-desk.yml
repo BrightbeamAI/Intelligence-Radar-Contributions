@@ -1,6 +1,7 @@
 # The review desk: checks each contribution against the list of people and the contribution rules,
-# takes decisions from comments (/approve, /changes, /decline, /withdraw, /published, /admit, /role,
+# takes decisions from comments (/approve, /changes, /decline, /edit, /withdraw, /published, /admit, /role,
 # /remove), applies the review policy and keeps labels in step. Code: .github/desk/. No secrets needed.
+# Comments without a command, comments on pull requests and the desk's own comments start no run.
 name: Review desk
 
 on:
@@ -23,16 +24,21 @@ concurrency:
 
 jobs:
   desk:
-    if: ${{ !github.event.issue.pull_request && github.actor != 'github-actions[bot]' }}
+    if: >-
+      ${{ !github.event.issue.pull_request && github.actor != 'github-actions[bot]'
+      && (github.event_name != 'issue_comment' || contains(github.event.comment.body, '/')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
+          sparse-checkout: .github/desk/
+          sparse-checkout-cone-mode: false
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
+          package-manager-cache: false
       - name: Review desk
         run: node .github/desk/run.mjs
         env:

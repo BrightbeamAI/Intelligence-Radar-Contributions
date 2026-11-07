@@ -3,9 +3,10 @@ name: Review desk tests
 
 on:
   push:
-    paths: ['.github/desk/**']
+    paths: ['.github/desk/**', '.github/workflows/desk-tests.yml']
   pull_request:
-    paths: ['.github/desk/**']
+    paths: ['.github/desk/**', '.github/workflows/desk-tests.yml']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,10 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
+          sparse-checkout: .github/desk/
+          sparse-checkout-cone-mode: false
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
+          package-manager-cache: false
       - run: node --test .github/desk/test/*.test.mjs
