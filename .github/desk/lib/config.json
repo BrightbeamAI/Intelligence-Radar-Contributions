@@ -1,9 +1,9 @@
 {
- "note": "How contributions reach The Intelligence Radar. Read by the build (site links, MCP data), the GitHub review desk, the CHAP recorder and the publisher. See community/SPEC.md. github_app_client_id is the public client ID of the GitHub App that lets people sign in from the MCP server; leave it empty until the App is registered (people then use a personal token).",
+ "note": "How contributions reach The Intelligence Radar. Read by the build (site links, MCP data), the GitHub review desk, the CHAP recorder and the publisher. See community/SPEC.md. github_app_client_id is the public client ID of the GitHub App 'The Intelligence Radar' (BrightbeamAI, device flow on, Issues read and write, installed on the contributions repository only), with which people sign in from the MCP server. It is not a secret. records_branch holds the private CHAP record and the approved contributions.",
  "github_repo": "BrightbeamAI/Intelligence-Radar-Contributions",
  "records_repo": "BrightbeamAI/Intelligence-Radar",
  "records_branch": "records",
- "github_app_client_id": "",
+ "github_app_client_id": "Iv23liZ5wlSB6OZmEcMB",
  "desk_bot": "github-actions[bot]",
  "workspace": "wsp_intelligence_radar",
  "kinds": {
