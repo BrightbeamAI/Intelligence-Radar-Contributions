@@ -5,7 +5,7 @@ labels: ["contribution", "correction"]
 body:
   - type: markdown
     attributes:
-      value: "Contributions from the people on the [list of people](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/blob/main/PEOPLE.md) go to review automatically. Not on it yet? Use **Apply to contribute** first. Editors and specialist reviewers decide here, each decision with its reason. Approved contributions are published on https://theintelligenceradar.com/ with credit."
+      value: "Anyone can contribute. Once the form is complete, it goes to the editors and specialist reviewers, who decide here, each decision with its reason. Approved contributions are published on https://theintelligenceradar.com/ with credit, and their contributors join the [list of people](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/blob/main/PEOPLE.md)."
   - type: input
     id: entry
     attributes:
@@ -79,7 +79,7 @@ body:
     id: credit_name
     attributes:
       label: "Name to credit"
-      description: "Leave empty to use your name on the list of people."
+      description: "Leave empty to use your name on the list of people, or your GitHub username."
     validations:
       required: false
   - type: textarea

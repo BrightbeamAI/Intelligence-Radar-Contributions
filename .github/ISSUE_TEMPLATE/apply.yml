@@ -1,11 +1,11 @@
-name: "Apply to contribute"
-description: "Ask to become an approved contributor or specialist reviewer."
+name: "Apply to review"
+description: "Ask to become a specialist reviewer or an editor of The Intelligence Radar."
 title: "[Apply] "
 labels: ["apply-to-contribute"]
 body:
   - type: markdown
     attributes:
-      value: "Editors read each application and reply here. Once approved, your GitHub account is added to the list of people, and everything you send here or from your AI assistant is checked against it automatically."
+      value: "Specialist reviewers review contributions alongside the editors. Anyone can contribute without applying: use the other forms. The editors read each application and reply here."
   - type: input
     id: name
     attributes:
@@ -24,8 +24,8 @@ body:
     attributes:
       label: "Role"
       options:
-        - "Contributor"
         - "Specialist reviewer"
+        - "Editor"
     validations:
       required: false
   - type: checkboxes
