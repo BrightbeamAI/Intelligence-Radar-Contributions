@@ -140,6 +140,35 @@ export class Desk {
     return '';
   }
 
+  // ---------------------------------------------------------------- who is told: @mentions, so that GitHub notifies them
+
+  mentions(logins) {
+    return [...new Set(logins)].map((l) => `@${l}`).join(' ');
+  }
+
+  editors(except = null) {
+    return this.roster.people.filter((p) => p.role === 'editor' && !same(p.login, except)).map((p) => p.login);
+  }
+
+  /** Everyone who can review: editors first, then specialist reviewers. */
+  panel(except = null) {
+    const order = { editor: 0, reviewer: 1 };
+    return this.roster.people.filter((p) => canReview(p.role) && !same(p.login, except))
+      .sort((a, b) => order[a.role] - order[b.role]).map((p) => p.login);
+  }
+
+  /** The people asked to review now: an editor when an editor's approval is what is missing, else the panel; never the contributor or anyone who has approved this version. */
+  reviewCall(st, author) {
+    if (st.status !== 'in-review') return '';
+    const a = st.assessment;
+    const done = new Set((a?.counted ?? []).map((d) => String(d.person).toLowerCase()));
+    const editorOnly = a?.editorMissing && a.missing === 1;
+    const who = (editorOnly ? this.editors(author) : this.panel(author)).filter((l) => !done.has(l.toLowerCase())).slice(0, 20);
+    if (who.length) return `For review: ${this.mentions(who)}.`;
+    return editorOnly ? 'No other editor is on the list of people yet, so it waits until an editor is added.'
+      : 'No one else on the list of people can review it yet, so it waits until an editor adds a reviewer.';
+  }
+
   // ---------------------------------------------------------------- events
 
   async handle(name, event) {
@@ -164,9 +193,12 @@ export class Desk {
     const authorRole = this.roster.role(author, issue.user?.id);
     if (!authorRole) {
       await this.labels(issue, kind, 'needs-approval');
+      const eds = this.editors(author);
       await this.notice(issue, events, 'needs-approval',
         `Thank you, @${author}. Contributions go to review only from the people on the [list of people](${this.link('blob/main/PEOPLE.md')}), and this account is not on it yet. `
-        + `To apply, open [Apply to contribute](${this.form('apply.yml')}). Once an editor approves the application, this issue goes to review automatically.`);
+        + `An editor has been asked to approve you; once one does, this issue goes to review automatically. You can also tell the editors about yourself with [Apply to contribute](${this.form('apply.yml')}).`
+        + (eds.length ? `\n\n${this.mentions(eds)}: a contribution from someone new. To approve @${author} and send it to review, comment \`/admit contributor\` `
+          + '(or `/admit reviewer`) here; to turn them down, `/decline <reason>`.' : ''));
       return 'needs approval';
     }
     const payload = parsed.payload;
@@ -214,7 +246,7 @@ export class Desk {
       revised: `Version ${n} received from @${author}. Approvals of earlier versions no longer count.`,
       edited: `Version ${n}: edited by @${by} (${roleName(role)}), which counts as their approval of it.`,
     }[cause];
-    await this.say(issue, [head, this.statusLine(st2)].filter(Boolean).join('\n\n'), [ev]);
+    await this.say(issue, [head, this.statusLine(st2), this.reviewCall(st2, author)].filter(Boolean).join('\n\n'), [ev]);
     await this.labels(issue, kind, st2.status);
     return st2.status;
   }
@@ -227,9 +259,31 @@ export class Desk {
       await this.notice(issue, events, 'already-listed', `@${issue.user.login} is already on the [list of people](${this.link('blob/main/PEOPLE.md')}) as ${roleName(known.role) === 'editor' ? 'an editor' : `a ${roleName(known.role)}`}.`);
       return 'already listed';
     }
+    const eds = this.editors(issue.user?.login);
     await this.notice(issue, events, 'application-received',
-      'Thank you for applying. The editors read each application and reply here. An editor approves it by commenting `/admit contributor` or `/admit reviewer`.');
+      'Thank you for applying. The editors read each application and reply here.'
+      + (eds.length ? `\n\n${this.mentions(eds)}: a new application. Approve it with \`/admit contributor\` or \`/admit reviewer\`, or answer with \`/decline <reason>\`.` : ''));
     return 'application';
+  }
+
+  /** Put a person on the list of people, say so on the issue, and send their waiting contributions to review. */
+  async admit(issue, { login, id, name, affiliation = '', role, areas = [], actor, application }) {
+    await this.changeRoster((roster) => {
+      const outcome = roster.admit({ login, id, name, affiliation, role, areas, since: this.today(), issue: issue.number });
+      return outcome === 'nothing' ? null : `Admit @${login} as ${roleName(role)} (#${issue.number})`;
+    });
+    const what = role === 'editor' ? 'an editor' : `a ${roleName(role)}`;
+    await this.say(issue,
+      `Welcome, @${login}: approved by @${actor} as ${what}, and now on the [list of people](${this.link('blob/main/PEOPLE.md')}). `
+      + (application
+        ? `Contribute with the [forms](${this.link('issues/new/choose')}) or from your AI assistant with The Intelligence Radar's MCP server; everything you send is checked against the list automatically.`
+        : 'This contribution now goes to review, and everything you send from now on is checked against the list automatically.'),
+      [{ e: 'admitted', login, id, role, by: actor, name }]);
+    if (application) {
+      await this.labels(issue, 'apply', null, ['admitted']);
+      await this.gh.close(issue.number, 'completed');
+    }
+    await this.recheckAuthor(login);
   }
 
   // ---------------------------------------------------------------- commands
@@ -257,6 +311,27 @@ export class Desk {
     const st = contributionState(events, this.config, kind);
     const author = issue.user?.login;
     const at = this.now().toISOString();
+    const newcomer = !this.roster.find(author, issue.user?.id);
+    // a first contribution from someone not on the list: an editor approves or turns down the person right here
+    if (cmd.name === 'admit' || (cmd.name === 'decline' && newcomer && st.status === 'new')) {
+      if (actorRole !== 'editor') return reply('only editors decide who is on the list of people.');
+      if (!newcomer) return reply(`@${author} is already on the list of people.`);
+      if (cmd.name === 'decline') {
+        if (!cmd.text) return reply('give the reason: `/decline <reason>`.');
+        await this.say(issue, `@${author} is not approved to contribute (decided by @${actor}, editor):\n\n${quote(cmd.text)}\n\nThank you for your interest in The Intelligence Radar.`,
+          [{ e: 'application-declined', login: author, by: actor, reason: cmd.text }]);
+        await this.gh.close(issue.number, 'not_planned');
+        return 'contributor not approved';
+      }
+      const role = roleWord(cmd.args.split(/\s+/)[0] || 'contributor');
+      if (!role) return reply('name the role: `/admit contributor`, `/admit reviewer` or `/admit editor`.');
+      // the name shown on the list: the credit the person chose on this contribution, else their GitHub login
+      const credit = parsed.payload?.credit ?? {};
+      const shown = credit.public !== false;
+      await this.admit(issue, { login: author, id: issue.user?.id, name: (shown && credit.name) || author, affiliation: (shown && credit.affiliation) || '',
+        role, actor, application: false });
+      return `admitted as ${role}`;
+    }
     if (['approve', 'changes', 'decline'].includes(cmd.name)) {
       if (!canReview(actorRole)) return reply(`only the editors and specialist reviewers on the [list of people](${this.link('blob/main/PEOPLE.md')}) decide on contributions.`);
       if (same(actor, author)) return reply('you cannot review your own contribution.');
@@ -268,7 +343,9 @@ export class Desk {
       const st2 = contributionState([...events, { ...ev, at }], this.config, kind);
       const who = `@${actor} (${roleName(actorRole)})`;
       let text;
-      if (cmd.name === 'approve') text = [`Version ${st.current.n} approved by ${who}.`, cmd.text ? quote(cmd.text) : '', this.statusLine(st2)].filter(Boolean).join('\n\n');
+      if (cmd.name === 'approve') {
+        text = [`Version ${st.current.n} approved by ${who}.`, cmd.text ? quote(cmd.text) : '', this.statusLine(st2), this.reviewCall(st2, author)].filter(Boolean).join('\n\n');
+      }
       else if (cmd.name === 'changes') {
         text = `${who} asked for changes to version ${st.current.n}:\n\n${quote(cmd.text)}\n\n@${author}, edit this issue to send a revised version; it is checked again automatically. `
           + 'From an AI assistant, use revise_contribution in The Intelligence Radar\'s MCP server.';
@@ -304,7 +381,7 @@ export class Desk {
       const ev = { e: 'version', n: st.versions.length + 1, digest: dg, by: actor, role: actorRole, cause: 'edited', reason: cmd.text, payload: edited, comment: comment.id };
       const st2 = contributionState([...events, { ...ev, at }], this.config, kind);
       await this.say(issue, [`Version ${ev.n}: edited by @${actor} (${roleName(actorRole)}), which counts as their approval of it. The issue now shows this version.`,
-        quote(cmd.text), this.statusLine(st2)].filter(Boolean).join('\n\n'), [ev]);
+        quote(cmd.text), this.statusLine(st2), this.reviewCall(st2, author)].filter(Boolean).join('\n\n'), [ev]);
       await this.labels(issue, kind, st2.status);
       return st2.status;
     }
@@ -344,20 +421,8 @@ export class Desk {
     const role = roleWord(cmd.args.split(/\s+/)[0] || (/reviewer/i.test(parsed.application.role ?? '') ? 'reviewer' : 'contributor'));
     if (!role) return reply('name the role: `/admit contributor`, `/admit reviewer` or `/admit editor`.');
     const app = parsed.application;
-    const areas = Array.isArray(app.areas) ? app.areas : [];
-    let outcome = 'nothing';
-    await this.changeRoster((roster) => {
-      outcome = roster.admit({ login: applicant.login, id: applicant.id, name: app.name, affiliation: app.affiliation, role, areas, since: this.today(), issue: issue.number });
-      return outcome === 'nothing' ? null : `Admit @${applicant.login} as ${roleName(role)} (#${issue.number})`;
-    });
-    const what = role === 'editor' ? 'an editor' : `a ${roleName(role)}`;
-    await this.say(issue,
-      `Welcome, @${applicant.login}: approved by @${actor} as ${what}, and now on the [list of people](${this.link('blob/main/PEOPLE.md')}). `
-      + `Contribute with the [forms](${this.link('issues/new/choose')}) or from your AI assistant with The Intelligence Radar's MCP server; everything you send is checked against the list automatically.`,
-      [{ e: 'admitted', login: applicant.login, id: applicant.id, role, by: actor, name: app.name || applicant.login }]);
-    await this.labels(issue, 'apply', null, ['admitted']);
-    await this.gh.close(issue.number, 'completed');
-    await this.recheckAuthor(applicant.login);
+    await this.admit(issue, { login: applicant.login, id: applicant.id, name: app.name || applicant.login, affiliation: app.affiliation || '', role,
+      areas: Array.isArray(app.areas) ? app.areas : [], actor, application: true });
     return `admitted as ${role}`;
   }
 

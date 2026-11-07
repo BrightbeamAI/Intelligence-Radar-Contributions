@@ -4,7 +4,7 @@ The reviewers judge each contribution on its evidence. These points help them de
 
 ## Before you start
 
-- Make sure your GitHub account is on the [list of people](PEOPLE.md). If it is not, [apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml) first: contributions from other accounts wait until an editor approves the application.
+- Contributions from the GitHub accounts on the [list of people](PEOPLE.md) go to review at once. Not on it yet? [Apply to contribute](https://www.github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues/new?template=apply.yml), or simply send your first contribution: the editors are told, and when one approves you, you join the list and it goes to review.
 - Read the entry on [TheIntelligenceRadar.com](https://theintelligenceradar.com/) as it stands now. Each entry page links to the forms with the entry filled in.
 - One contribution, one change. Send separate issues for separate points.
 - Declare any interest: a vendor, client, employer or product named in the entry or in your sources. Write None if there is nothing to declare.
@@ -46,8 +46,8 @@ Decide by commenting on the issue. The command goes on the first line; the reaso
 | `/edit <reason>` and the whole edited contribution in a ` ```json ` block | The same, while it is in review | Makes a new version, shown on the issue; counts as your approval of it |
 | `/withdraw <reason>` | The contributor | Withdraws it before a final decision |
 | `/published <release>` | Editors | Records that an approved contribution is published, and closes the issue |
-| `/admit contributor`, `/admit reviewer` or `/admit editor` | Editors, on an application | Adds the applicant to the list of people |
-| `/decline <reason>` | Editors, on an application | Declines the application |
+| `/admit contributor`, `/admit reviewer` or `/admit editor` | Editors, on an application or on a first contribution from someone not on the list | Adds the person to the list of people; their waiting contributions go to review at once |
+| `/decline <reason>` | Editors, on an application or on such a first contribution | Turns the person down and closes the issue |
 | `/role @login <role>` and `/remove @login <reason>` | Editors, on any issue | Changes a person's role, or takes them off the list |
 
-Reviews, corrections and evidence need one approval from an editor or a specialist reviewer. Label changes and new entries need an editor's approval. A command may carry the digest of the version you read (`/approve sha256:1a2b3c4d … <reason>`): the desk then refuses it if the contribution has changed since.
+The review desk tells you by @mention when something needs you: editors when someone applies or sends a first contribution without being on the list, and the editors and specialist reviewers asked to review each contribution. Reviews, corrections and evidence need one approval from an editor or a specialist reviewer. Label changes and new entries need an editor's approval. A command may carry the digest of the version you read (`/approve sha256:1a2b3c4d … <reason>`): the desk then refuses it if the contribution has changed since.

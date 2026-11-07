@@ -64,6 +64,40 @@ const labelChange = () => ({
   }),
 });
 
+test('an application tells the editors, by @mention', async () => {
+  const { opened, last } = setUp();
+  const app = { title: '[Apply] Nia Newcomer', labels: ['apply-to-contribute'], body: formBody('apply.yml', { name: 'Nia Newcomer', experience: 'Model risk.', disclosure: 'None' }) };
+  assert.equal(await opened('newcomer', app), 'application');
+  assert.match(last(1), /@ed-one: a new application/);
+});
+
+test("a newcomer's first contribution: the editors are told, and /admit on it lists them and sends it to the reviewers", async () => {
+  const { gh, opened, says, state, last } = setUp();
+  assert.equal(await opened('newcomer', correction()), 'needs approval');
+  assert.match(last(1), /@ed-one: a contribution from someone new\. To approve @newcomer/);
+  assert.equal(await says(1, 'rev-two', '/admit contributor'), 'refused');
+  assert.equal(await says(1, 'ed-one', '/admit contributor'), 'admitted as contributor');
+  const listed = JSON.parse(gh.files.get('people.json').text).people.find((p) => p.login === 'newcomer');
+  assert.equal(listed.role, 'contributor');
+  assert.equal(listed.application, 1);
+  assert.match(gh.files.get('PEOPLE.md').text, /@newcomer/);
+  assert.equal(state(1, 'correction').status, 'in-review');
+  assert.deepEqual(gh.labelsOf(1), ['contribution', 'correction', 'in-review']);
+  assert.match(last(1), /For review: @ed-one @rev-two\./);
+  assert.equal(await says(1, 'ed-one', '/admit reviewer'), 'refused');
+});
+
+test("an editor can turn a newcomer down on their contribution; a label change asks the editors", async () => {
+  const { gh, opened, says, last } = setUp();
+  await opened('newcomer', correction());
+  assert.equal(await says(1, 'ed-one', '/decline Outside the scope of The Intelligence Radar.'), 'contributor not approved');
+  assert.equal(gh.issues.get(1).state_reason, 'not_planned');
+  await opened('cont-three', labelChange());
+  assert.match(last(2), /For review: @ed-one\.$/m);
+  await says(2, 'rev-two', '/approve');
+  assert.match(last(2), /It needs an editor's approval[\s\S]*For review: @ed-one\./);
+});
+
 test('commands are read from the first line, with an optional digest', () => {
   assert.deepEqual(parseCommand('/approve Looks right.'), { name: 'approve', args: 'Looks right.', text: 'Looks right.', digest: null, json: null });
   assert.equal(parseCommand('/changes sha256:abcdef12 Cite the source\nand the date').digest, 'sha256:abcdef12');
