@@ -1,5 +1,5 @@
-// The list of people approved to contribute (people.json) and its public page (PEOPLE.md).
-// Roles: contributor, reviewer (specialist reviewer) and editor. Reviewers and editors review.
+// The list of people (people.json) and its public page (PEOPLE.md): the editors, the specialist reviewers, and the
+// contributors, each listed once a contribution of theirs is approved. Reviewers and editors review.
 
 export const ROLES = ['contributor', 'reviewer', 'editor'];
 export const ROLE_NAMES = { contributor: 'Contributor', reviewer: 'Specialist reviewer', editor: 'Editor' };
@@ -30,7 +30,7 @@ export class Roster {
   }
 
   /** Add or change a person. Returns what changed: added, role, or nothing. */
-  admit({ login, id = null, name, affiliation = '', role, areas = [], since, issue = null }) {
+  admit({ login, id = null, name, affiliation = '', role, areas = [], since, issue = null, contribution = null }) {
     if (!LOGIN.test(String(login))) throw new Error(`${login} is not a GitHub login.`);
     if (!ROLES.includes(role)) throw new Error(`The role must be one of ${ROLES.join(', ')}.`);
     const found = this.find(login, id);
@@ -44,6 +44,7 @@ export class Roster {
     person.areas = areas;
     person.since = since;
     if (issue) person.application = issue;
+    if (contribution) person.contribution = contribution; // the first approved contribution, for a contributor
     this.people.push(person);
     return 'added';
   }
@@ -69,9 +70,12 @@ export function peoplePage(roster, repo) {
   const L = [
     '# People',
     '',
-    'The editors, specialist reviewers and contributors approved to contribute to [The Intelligence Radar](https://theintelligenceradar.com/).',
+    'The editors, specialist reviewers and contributors of [The Intelligence Radar](https://theintelligenceradar.com/). '
+      + 'Contributors are listed once a contribution of theirs is approved, unless they chose not to be credited.',
+    '',
     // through www.github.com: a full page load opens the form, where a link inside GitHub would open a blank issue
-    `Contributions from these GitHub accounts go to review automatically. To join them, [apply to contribute](https://www.github.com/${repo}/issues/new?template=apply.yml).`,
+    `Anyone can contribute with the [forms](https://github.com/${repo}/issues/new/choose) or from an AI assistant. `
+      + `To review contributions, [apply to review](https://www.github.com/${repo}/issues/new?template=apply.yml).`,
     '',
   ];
   for (const role of order) {
