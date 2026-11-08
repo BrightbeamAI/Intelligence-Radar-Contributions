@@ -23,8 +23,9 @@ export class FakeGitHub {
     return new Date(this.clock).toISOString();
   }
 
-  user(login, id) {
-    const u = { login, id, type: login.endsWith('[bot]') ? 'Bot' : 'User' };
+  /** A GitHub account. Its type follows GitHub (a login ending in [bot] is an app's), unless a test sets it. */
+  user(login, id, type = login.endsWith('[bot]') ? 'Bot' : 'User') {
+    const u = { login, id, type };
     this.users.set(login.toLowerCase(), u);
     return u;
   }
