@@ -3,6 +3,7 @@
 # policy, lists contributors once a contribution of theirs is approved, and keeps labels in step.
 # Code: .github/desk/. No secrets needed.
 # Comments without a command, comments on pull requests and the desk's own comments start no run.
+# Comments from other apps do: the publisher app posts /published <release> for @editor on each issue of a release.
 name: Review desk
 
 on:
