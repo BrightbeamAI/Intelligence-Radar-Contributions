@@ -37,6 +37,22 @@ Each entry's page on the website links to these forms with the entry filled in.
 
 `in-review` → `approved` → `published` (closed). Also `changes-requested` (edit the issue to revise it), `needs-info` (fix the form) and `declined` (with the reason). Editors and specialist reviewers decide with commands in comments, listed in the [guide](CONTRIBUTING.md#for-editors-and-specialist-reviewers).
 
+An editor marks a contribution `published` once it is live on TheIntelligenceRadar.com. Editors normally mark a whole release published at once, with the "Mark release published" workflow in Brightbeam's private site repository: it posts `/published <release> for @editor` on each issue through The Intelligence Radar's publisher app. `/published <release>` on one issue still works.
+
+## Follow contributions
+
+GitHub notifies contributors of every message on their issues. The review desk's messages to contributors carry the TheIntelligenceRadar.com header. Each link below opens a GitHub search:
+
+- [Your contributions](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20author%3A%40me): everything you have sent, open or closed.
+- [In review](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20is%3Aopen%20label%3Ain-review): contributions waiting for a decision from the editors and specialist reviewers.
+- [Changes requested](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20is%3Aopen%20label%3Achanges-requested): contributions waiting for their contributor to revise them.
+- [Approved, waiting for the next release](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20is%3Aopen%20label%3Aapproved): approved contributions that the next release will publish.
+- [Published](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20label%3Apublished): contributions that are now part of The Intelligence Radar.
+
+For specialist reviewers and editors:
+
+- [Asked to review](https://github.com/BrightbeamAI/Intelligence-Radar-Contributions/issues?q=is%3Aissue%20is%3Aopen%20label%3Ain-review%20mentions%3A%40me): contributions in review that @mention you, as the review desk does when it asks you to decide.
+
 ---
 
 Published under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), with credit as you choose. Please read the [guide](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md).
