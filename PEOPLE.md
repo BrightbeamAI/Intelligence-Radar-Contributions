@@ -15,6 +15,7 @@ Anyone can contribute with the [forms](https://github.com/BrightbeamAI/Intellige
 
 | | Name | Organisation | Since |
 |:-:|---|---|---|
+| <img src="https://github.com/Brightbeamderekogorman.png?size=80" width="40" height="40" alt=""> | **Derek O'Gorman** ([@Brightbeamderekogorman](https://github.com/Brightbeamderekogorman)) | Brightbeam | 2026-11-09 |
 | <img src="https://github.com/BrightbeamMuntis.png?size=80" width="40" height="40" alt=""> | **Muntis** ([@BrightbeamMuntis](https://github.com/BrightbeamMuntis)) |  | 2026-11-09 |
 | <img src="https://github.com/blackp2.png?size=80" width="40" height="40" alt=""> | **Philip Black** ([@blackp2](https://github.com/blackp2)) | Brightbeam | 2026-11-09 |
 
