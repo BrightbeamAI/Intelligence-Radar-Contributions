@@ -18,6 +18,24 @@
    "affiliation": "Brightbeam",
    "areas": [],
    "since": "2026-11-07"
+  },
+  {
+   "login": "blackp2",
+   "id": 58827412,
+   "name": "Philip Black",
+   "role": "reviewer",
+   "affiliation": "Brightbeam",
+   "areas": [
+    "Models and inference",
+    "Knowledge, context and expertise",
+    "Evaluation and learning",
+    "Prediction, science and physical AI",
+    "Sector: Pharma and biotech",
+    "Sector: Medtech",
+    "Sector: Manufacturing"
+   ],
+   "since": "2026-11-09",
+   "application": 5
   }
  ]
 }
