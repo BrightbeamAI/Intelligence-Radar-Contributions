@@ -49,6 +49,25 @@
    ],
    "since": "2026-11-09",
    "application": 6
+  },
+  {
+   "login": "Brightbeamderekogorman",
+   "id": 313790822,
+   "name": "Derek O'Gorman",
+   "role": "reviewer",
+   "affiliation": "Brightbeam",
+   "areas": [
+    "Knowledge, context and expertise",
+    "Agents and workflow",
+    "Assurance, security and governance",
+    "Work, products and people",
+    "Operations, economics and sovereignty",
+    "Compute and hardware",
+    "Sector: Pharma and biotech",
+    "Sector: Manufacturing"
+   ],
+   "since": "2026-11-09",
+   "application": 7
   }
  ]
 }
