@@ -109,6 +109,8 @@ export class Desk {
   /** The form an issue was opened from, or null when it is not a contribution or an application. */
   parse(issue) {
     const labels = labelNames(issue);
+    // evidence for an open question is weighed by the editors on its own issue, outside the review desk
+    if (labels.includes('open-question')) return null;
     const title = String(issue.title ?? '');
     const byLabel = labels.includes('contribution') || labels.includes('apply-to-contribute');
     const byTitle = this.forms.forms.some((f) => title.startsWith(f.title.trim()));

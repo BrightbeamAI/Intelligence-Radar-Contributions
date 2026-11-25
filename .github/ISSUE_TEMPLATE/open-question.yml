@@ -1,0 +1,63 @@
+name: "Settle an open question"
+description: "Bring evidence that settles one of the questions The Intelligence Radar leaves open."
+title: "[Open question] "
+labels: ["open-question"]
+body:
+  - type: markdown
+    attributes:
+      value: "The editors weigh the evidence here, in the open, and anyone can add to the thread. Evidence that settles a question is credited on https://theintelligenceradar.com/open-questions.html and in the next edition, by name or not, as you choose. Evidence about one entry goes through the contribution forms instead."
+  - type: input
+    id: question
+    attributes:
+      label: "Open question"
+      description: "The question as the website states it. It is filled in when you open this form from the question."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence_sources
+    attributes:
+      label: "Your sources"
+      description: "One per line: URL | title | publisher | date. Everything after the URL is optional."
+      placeholder: "https://example.org/report | Report title | Publisher | October 2026"
+    validations:
+      required: true
+  - type: textarea
+    id: settles
+    attributes:
+      label: "How it settles the question"
+      description: "What the evidence shows, its method and its limits, and how it meets the test the website gives for the question."
+    validations:
+      required: true
+  - type: textarea
+    id: interests
+    attributes:
+      label: "Interests you declare"
+      description: "Any tie to a vendor, product or organisation named in your sources. Write None if there is nothing to declare."
+      placeholder: "None"
+    validations:
+      required: true
+  - type: dropdown
+    id: credit_choice
+    attributes:
+      label: "How to credit you"
+      options:
+        - "By name"
+        - "Not publicly"
+    validations:
+      required: false
+  - type: input
+    id: credit_as
+    attributes:
+      label: "Name for the credit"
+      description: "Leave empty to use your GitHub username."
+    validations:
+      required: false
+  - type: checkboxes
+    id: agree
+    attributes:
+      label: "Agreement"
+      options:
+        - label: "I agree that my evidence is published under CC BY 4.0, with credit as I chose above."
+          required: true
+        - label: "I follow the code of conduct in this repository."
+          required: true

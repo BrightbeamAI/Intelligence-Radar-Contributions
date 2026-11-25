@@ -439,3 +439,17 @@ test('every marker carries by_id, the numeric GitHub id of whoever acted', async
     ['admitted', 'application-declined', 'closed', 'decision', 'listed', 'published', 'removed', 'role', 'version', 'withdrawn']);
   for (const e of all) assert.ok(Number.isInteger(e.by_id), JSON.stringify(e));
 });
+
+test('evidence for an open question is left to the editors: no labels, no comments', async () => {
+  const { gh, opened } = setUp();
+  const n = await opened('cont-three', {
+    title: '[Open question] When do more agents beat a simpler architecture?',
+    labels: ['open-question'],
+    body: ['### Open question', 'When do more agents beat a simpler architecture?', '### Your sources', 'https://example.org/a | A study',
+      '### How it settles the question', 'A controlled comparison on the same tasks.', '### Interests to declare', 'None',
+      '### Credit', 'Credit me by name', '### Name to credit', 'Con Three'].join('\n\n'),
+  });
+  const issue = gh.issues.get(typeof n === 'number' ? n : [...gh.issues.keys()].at(-1));
+  assert.equal(gh.commentsOn(issue.number).length, 0);
+  assert.deepEqual((issue.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name)), ['open-question']);
+});
