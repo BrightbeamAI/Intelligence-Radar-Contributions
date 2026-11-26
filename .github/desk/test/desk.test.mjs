@@ -453,3 +453,91 @@ test('evidence for an open question is left to the editors: no labels, no commen
   assert.equal(gh.commentsOn(issue.number).length, 0);
   assert.deepEqual((issue.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name)), ['open-question']);
 });
+
+// ---------------------------------------------------------------- dimension leads
+
+const leadApp = (name, dimension, extra = {}) => ({
+  title: `[Apply to lead] ${name}`,
+  labels: ['apply-to-contribute', 'dimension-lead'],
+  body: formBody('apply-lead.yml', { name, affiliation: 'Example Lab', dimension, experience: 'Built agent platforms for six years.',
+    plan: 'Bring the evidence on agent evaluation up to date.', disclosure: 'None', ...extra }),
+});
+
+test('an application to lead a dimension goes to the editors, and an editor admits the lead', async () => {
+  const { gh, opened, says, last } = setUp();
+  assert.equal(await opened('newcomer', leadApp('Nia Newcomer', 'Agents and workflow')), 'application');
+  assert.deepEqual(gh.labelsOf(1).sort(), ['apply-to-contribute', 'dimension-lead']);
+  assert.match(last(1), /### Application received\n\nThank you for applying to lead Agents and workflow, @newcomer\./);
+  assert.match(last(1), /\*\*For the reviewers\.\*\* @ed-one: a new application to lead Agents and workflow\. Approve it with `\/admit lead`, or answer with `\/decline <reason>`\./);
+  assert.match(last(1), /Agents and workflow has no lead yet\./);
+  // only editors decide; the lead decides on contributions as a specialist reviewer does
+  assert.equal(await says(1, 'rev-two', '/admit lead'), 'refused');
+  assert.equal(await says(1, 'ed-one', '/admit'), 'admitted as reviewer, leading Agents and workflow');
+  assert.deepEqual(people(gh).find((p) => p.login === 'newcomer'), { login: 'newcomer', id: 104, name: 'Nia Newcomer', role: 'reviewer', affiliation: 'Example Lab',
+    areas: ['Agents and workflow'], leads: [{ dimension: 'Agents and workflow', since: '2026-11-08' }], since: '2026-11-08', application: 1 });
+  assert.match(last(1), /### Welcome to The Intelligence Radar\n\nWelcome, @newcomer: approved by @ed-one as the dimension lead for Agents and workflow, and now on the \[list of people\][\s\S]*You will be asked to decide on contributions here/);
+  assert.equal(gh.issues.get(1).state, 'closed');
+  const admitted = eventsOf(gh.commentsOn(1), BOT).find((e) => e.e === 'admitted');
+  assert.deepEqual([admitted.role, admitted.lead, admitted.by_id], ['reviewer', 'Agents and workflow', 101]);
+  // PEOPLE.md: the leads in their own table, in the order of the dimensions; a lead is not listed again with the specialist reviewers
+  const page = gh.files.get('PEOPLE.md').text;
+  assert.match(page, /## Dimension leads\n\n\| \| Dimension \| Name \| Organisation \| Since \|\n\|:-:\|---\|---\|---\|---\|\n\| <img [^|]*\| Agents and workflow \| \*\*Nia Newcomer\*\* \(\[@newcomer\]/);
+  assert.ok(!page.split('## Specialist reviewers')[1].includes('Nia Newcomer'));
+  assert.match(page, /\[apply to lead a dimension\]\(https:\/\/www\.github\.com\/[^)]*template=apply-lead\.yml\)/);
+  // the new lead reviews
+  await opened('cont-three', correction());
+  assert.equal(await says(2, 'newcomer', '/approve'), 'approved');
+});
+
+test('a second application to lead tells the editors who leads it; an editor may lead a dimension; /admit reviewer and /decline', async () => {
+  const { gh, opened, says, last } = setUp();
+  await opened('cont-three', correction());
+  assert.equal(await says(1, 'ed-one', '/role @rev-two lead 3'), 'lead Agents and workflow');
+  assert.match(last(1), /^@rev-two is now the dimension lead for Agents and workflow \(changed by @ed-one\)\./);
+  // a contributor applies to lead the same dimension: the editors are told who leads it, and may list the applicant as a specialist reviewer
+  assert.equal(await opened('cont-three', leadApp('Con Three', 'Agents and workflow')), 'application');
+  assert.match(last(2), /@cont-three is on the list of people as a contributor\. Agents and workflow has a lead already: @rev-two\./);
+  assert.equal(await says(2, 'ed-one', '/admit reviewer'), 'admitted as reviewer');
+  assert.deepEqual([people(gh).find((p) => p.login === 'cont-three').role, people(gh).find((p) => p.login === 'cont-three').leads], ['reviewer', undefined]);
+  // an editor applies to lead: another editor decides, and the editor stays an editor
+  assert.equal(await opened('ed-one', leadApp('Edith One', 'Compute and hardware')), 'application');
+  assert.equal(await says(3, 'ed-one', '/admit lead'), 'refused');
+  assert.match(last(3), /^@ed-one another editor decides on your own application\.$/m);
+  assert.equal(await says(3, 'ed-one', '/role @rev-two editor'), 'role editor');
+  assert.match(last(3), /^@rev-two is now an editor \(changed by @ed-one\)\. The lead for Agents and workflow is open\.$/m);
+  assert.equal(await says(3, 'rev-two', '/admit lead'), 'admitted as editor, leading Compute and hardware');
+  const ed = people(gh).find((p) => p.login === 'ed-one');
+  assert.deepEqual([ed.role, ed.leads], ['editor', [{ dimension: 'Compute and hardware', since: '2026-11-08' }]]);
+  assert.match(last(3), /^@ed-one is now an editor and the dimension lead for Compute and hardware on the \[list of people\]/m);
+  const page = gh.files.get('PEOPLE.md').text;
+  assert.ok(page.split('## Dimension leads')[0].includes('Edith One') && page.split('## Dimension leads')[1].includes('Compute and hardware'));
+  // a declined application to lead carries the dimension in its marker
+  assert.equal(await opened('newcomer', leadApp('Nia Newcomer', 'Models and inference')), 'application');
+  assert.equal(await says(4, 'ed-one', '/decline Not in this edition.'), 'application declined');
+  assert.equal(eventsOf(gh.commentsOn(4), BOT).find((e) => e.e === 'application-declined').lead, 'Models and inference');
+  assert.equal(gh.issues.get(4).state, 'closed');
+});
+
+test('editors make and end leads with /role; a lead application without a dimension asks for one', async () => {
+  const { gh, opened, edited, says, last } = setUp();
+  await opened('cont-three', correction());
+  assert.equal(await says(1, 'ed-one', '/role @cont-three lead evaluation'), 'lead Evaluation and learning');
+  assert.deepEqual(people(gh).find((p) => p.login === 'cont-three').role, 'reviewer');
+  assert.equal(await says(1, 'ed-one', '/role @cont-three lead 99'), 'refused');
+  assert.equal(await says(1, 'ed-one', '/role @cont-three lead Evaluation and learning'), 'refused');
+  assert.match(last(1), /already leads Evaluation and learning\./);
+  assert.equal(await says(1, 'ed-one', '/role @cont-three reviewer'), 'role reviewer');
+  assert.match(last(1), /^@cont-three is now a specialist reviewer \(changed by @ed-one\)\. The lead for Evaluation and learning is open\.$/m);
+  assert.equal(people(gh).find((p) => p.login === 'cont-three').leads, undefined);
+  assert.equal(await says(1, 'ed-one', '/role @cont-three reviewer'), 'refused');
+  // leads come from an application or from /role, never from a contribution
+  assert.equal(await says(1, 'ed-one', '/admit lead'), 'refused');
+  // an application opened without the form, with no dimension: the applicant is asked once, and the editors are told once it names one
+  const body = formBody('apply-lead.yml', { name: 'Nia Newcomer', experience: 'Six years.', plan: 'Evidence.', disclosure: 'None' });
+  assert.equal(await opened('newcomer', { title: '[Apply to lead] Nia Newcomer', body }), 'needs information');
+  assert.match(last(2), /### Which dimension\?\n\n@newcomer, edit the issue to choose the dimension you would lead\./);
+  assert.deepEqual(gh.labelsOf(2).sort(), ['apply-to-contribute', 'dimension-lead']);
+  assert.equal(await edited(2, 'newcomer', { body: body.replace('### Dimension to lead\n\n_No response_', '### Dimension to lead\n\nCompute and hardware') }), 'application');
+  assert.match(last(2), /Thank you for applying to lead Compute and hardware, @newcomer\./);
+  assert.equal(await says(2, 'ed-one', '/admit lead Models'), 'admitted as reviewer, leading Models and inference');
+});
