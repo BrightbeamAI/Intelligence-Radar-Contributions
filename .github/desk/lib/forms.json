@@ -867,6 +867,103 @@
       "List my name, organisation and GitHub account on the public list of people if I am approved."
      ]
     }
+   ],
+   "apply": "reviewer"
+  },
+  {
+   "file": "apply-lead.yml",
+   "kind": null,
+   "apply": "lead",
+   "label": "dimension-lead",
+   "name": "Apply to lead a dimension",
+   "title": "[Apply to lead] ",
+   "description": "Ask to lead one of the nine dimensions of The Intelligence Radar. The editors decide.",
+   "fields": [
+    {
+     "type": "input",
+     "id": "name",
+     "label": "Name",
+     "to": "name",
+     "description": "",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "input",
+     "id": "affiliation",
+     "label": "Organisation",
+     "to": "affiliation",
+     "description": "Your organisation, or Independent.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "dropdown",
+     "id": "dimension",
+     "label": "Dimension to lead",
+     "to": "lead",
+     "options": [
+      "Models and inference",
+      "Knowledge, context and expertise",
+      "Agents and workflow",
+      "Assurance, security and governance",
+      "Evaluation and learning",
+      "Prediction, science and physical AI",
+      "Work, products and people",
+      "Operations, economics and sovereignty",
+      "Compute and hardware"
+     ],
+     "required": true,
+     "description": "The dimensions and their entries are on https://theintelligenceradar.com/dimensions.html"
+    },
+    {
+     "type": "textarea",
+     "id": "experience",
+     "label": "Experience in this dimension",
+     "to": "experience",
+     "description": "What you have built, run, researched or reviewed in it, in a few sentences.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "plan",
+     "label": "What you would do as its lead",
+     "to": "plan",
+     "description": "The first changes you would propose, the evidence you would bring and the specialist reviewers you could bring in.",
+     "placeholder": "",
+     "required": true
+    },
+    {
+     "type": "textarea",
+     "id": "links",
+     "label": "Links",
+     "to": "links",
+     "description": "Profiles, publications or projects that show your work.",
+     "placeholder": "",
+     "required": false
+    },
+    {
+     "type": "textarea",
+     "id": "disclosure",
+     "label": "Interests to declare",
+     "to": "disclosure",
+     "description": "Employers, clients or vendors you work with that this dimension's entries may judge.",
+     "placeholder": "None",
+     "required": true
+    },
+    {
+     "type": "checkboxes",
+     "id": "terms",
+     "label": "Terms",
+     "to": null,
+     "required": true,
+     "options": [
+      "I follow the code of conduct in this repository.",
+      "I declare new interests as they arise, and step back from any decision where I have one.",
+      "List my name, organisation and GitHub account on the public list of people if I am approved."
+     ]
+    }
    ]
   }
  ]

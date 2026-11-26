@@ -1,5 +1,5 @@
 {
- "note": "How contributions reach The Intelligence Radar. Read by the build (site links, MCP data), the GitHub review desk, the CHAP recorder and the publisher. See community/SPEC.md. github_app_client_id is the public client ID of the GitHub App 'The Intelligence Radar' (BrightbeamAI, device flow on, Issues read and write, installed on the contributions repository only), with which people sign in from the MCP server. It is not a secret. records_branch holds the private CHAP record and the approved contributions. publisher_bot is the account of The Intelligence Radar's publisher app: the review desk takes its one command, `/published <release> for @editor`, as that editor's.",
+ "note": "How contributions reach The Intelligence Radar. Read by the build (site links, MCP data), the GitHub review desk, the CHAP recorder and the publisher. See community/SPEC.md. apply_form and lead_form are the application forms: to be a specialist reviewer, and to lead a dimension. github_app_client_id is the public client ID of the GitHub App 'The Intelligence Radar' (BrightbeamAI, device flow on, Issues read and write, installed on the contributions repository only), with which people sign in from the MCP server. It is not a secret. records_branch holds the private CHAP record and the approved contributions. publisher_bot is the account of The Intelligence Radar's publisher app: the review desk takes its one command, `/published <release> for @editor`, as that editor's.",
  "github_repo": "BrightbeamAI/Intelligence-Radar-Contributions",
  "records_repo": "BrightbeamAI/Intelligence-Radar",
  "records_branch": "records",
@@ -40,6 +40,7 @@
   }
  },
  "apply_form": "apply.yml",
+ "lead_form": "apply-lead.yml",
  "sectors": {
   "financial-services": "Financial services",
   "insurance": "Insurance",
@@ -56,6 +57,7 @@
   "label-change": "d93f0b",
   "new-entry": "b60205",
   "apply-to-contribute": "c5def5",
+  "dimension-lead": "bfdadc",
   "needs-approval": "ededed",
   "needs-info": "f9d0c4",
   "in-review": "0052cc",
