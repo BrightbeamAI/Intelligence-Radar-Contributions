@@ -371,21 +371,27 @@ export function parseSources(text, relation = 'supports') {
 
 /**
  * Read an issue opened from a contribution form. `issue` has `title`, `body` and `labels` (names); `forms` is community/forms.json.
- * Returns { kind, payload, errors } with the payload normalised but not validated, or { kind: 'apply', application } for the apply form.
+ * Returns { kind, payload, errors } with the payload normalised but not validated, or { kind: 'apply', as, application } for an
+ * application form, where `as` is what the form applies for: 'reviewer' (apply.yml) or 'lead' (apply-lead.yml, a dimension lead).
  */
 export function payloadFromIssue(issue, forms) {
   const labels = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
   const sec = issueSections(issue.body);
   const has = (f) => Object.prototype.hasOwnProperty.call(sec, f.label);
+  const heading = String(issue.title || '');
+  const most = (list) => list.slice().sort((a, b) => b.fields.filter(has).length - a.fields.filter(has).length)[0];
   const byLabels = forms.forms.find((f) => f.kind && labels.includes(f.kind));
-  const byTitle = forms.forms.find((f) => String(issue.title || '').startsWith(f.title.trim()));
-  const byFields = forms.forms.slice().sort((a, b) => b.fields.filter(has).length - a.fields.filter(has).length)[0];
-  const form = labels.includes('apply-to-contribute') ? forms.forms.find((f) => f.kind === null) : byLabels || byTitle || byFields;
+  const byTitle = forms.forms.find((f) => heading.startsWith(f.title.trim()));
+  const byFields = most(forms.forms);
+  // the application forms: told apart by their own label (dimension-lead), then by their title, then by their fields
+  const applying = forms.forms.filter((f) => f.kind === null);
+  const applyForm = () => applying.find((f) => f.label && labels.includes(f.label)) ?? applying.find((f) => heading.startsWith(f.title.trim())) ?? most(applying);
+  const form = labels.includes('apply-to-contribute') ? applyForm() : byLabels || byTitle || byFields;
   if (!form) return { kind: null, errors: ['not a contribution form'] };
   if (form.kind === null) {
     const a = {};
     for (const f of form.fields) if (f.to && has(f)) a[f.to] = f.type === 'checkboxes' ? sec[f.label].split('\n').filter((l) => /^- \[x\]/i.test(l)).map((l) => l.replace(/^- \[x\]\s*/i, '')) : sec[f.label];
-    return { kind: 'apply', application: a, errors: [] };
+    return { kind: 'apply', as: form.apply || 'reviewer', application: a, errors: [] };
   }
   const errors = [];
   let p = { schema: SCHEMA, kind: form.kind };
