@@ -2,14 +2,15 @@
 // Anyone can contribute: it checks each contribution against the contribution rules and sends every
 // complete one to review, takes the editors' and specialist reviewers' decisions as commands in comments,
 // applies the review policy, lists a contributor on the list of people (people.json) once a contribution
-// of theirs is approved, keeps each issue's labels in step, and records every event as a marker comment
+// of theirs is approved, takes the editors' decisions on applications to review and to lead a dimension,
+// keeps each issue's labels in step, and records every event as a marker comment
 // that the private CHAP recorder replays. Each marker carries by_id, the numeric GitHub id of whoever acted.
 // Its messages to contributors and applicants are cards with the TheIntelligenceRadar.com header (Desk.card).
 // The publisher app marks a release published for the editor who runs it: `/published <release> for @editor`.
 // See community/SPEC.md in the editorial package.
 import { createHash } from 'node:crypto';
 import { canonical, digest, issueSections, kindName, normalise, payloadFromIssue, renderIssue, validate } from './lib/contribution.mjs';
-import { canReview, peoplePage, Roster, ROLE_NAMES } from './roster.mjs';
+import { canReview, leadsOf, peoplePage, Roster, ROLE_NAMES } from './roster.mjs';
 import { contributionState, eventsOf, FINAL, hasApproved, marker, noticesOf, OPEN, waitingFor } from './state.mjs';
 
 const STATUS_LABELS = ['in-review', 'changes-requested', 'approved', 'published', 'declined', 'withdrawn', 'needs-info', 'needs-approval'];
@@ -20,6 +21,8 @@ const same = (a, b) => String(a ?? '').toLowerCase() === String(b ?? '').toLower
 const labelNames = (issue) => (issue.labels ?? []).map((l) => (typeof l === 'string' ? l : l.name));
 const STATUS_WORDS = { new: 'not yet in review', 'in-review': 'in review', 'changes-requested': 'waiting for changes', approved: 'approved', declined: 'declined', withdrawn: 'withdrawn', published: 'published' };
 const aRole = (role) => (role === 'editor' ? 'an editor' : `a ${roleName(role)}`);
+// what a person is on the list: their role, and the dimension they lead (a lead decides on contributions as a specialist reviewer does)
+const asWhat = (role, lead) => (lead ? `${role === 'editor' ? 'an editor and ' : ''}the dimension lead for ${lead}` : aRole(role));
 // a card's first line: the TheIntelligenceRadar.com header, linked to the website
 const HEADER = '<a href="https://theintelligenceradar.com/"><img src="https://raw.githubusercontent.com/BrightbeamAI/Intelligence-Radar-Contributions/main/assets/message-header.png" alt="TheIntelligenceRadar.com" width="480"></a>';
 // each kind in a sentence ("your correction"), and the word that links it to the entry it targets ("your correction to IR-028")
@@ -97,11 +100,21 @@ export class Desk {
   }
 
   async writePeoplePage(message = 'Update the list of people') {
-    const page = peoplePage(this.roster, this.repo);
+    const page = peoplePage(this.roster, this.repo, this.forms.dimensions ?? []);
     const f = await this.gh.file('PEOPLE.md');
     if (f?.text === page) return false;
     await this.gh.putFile('PEOPLE.md', page, message, f?.sha);
     return true;
+  }
+
+  /** A dimension named in a command or an application: its name, its number, or the start of its name. Null when it names none. */
+  dimension(word) {
+    const names = this.forms.dimensions ?? [];
+    const w = String(word ?? '').trim().replace(/^["'`]|["'`.]$/g, '').toLowerCase();
+    if (!w) return null;
+    if (/^\d+$/.test(w)) return names[Number(w) - 1] ?? null;
+    const starts = names.filter((n) => n.toLowerCase().startsWith(w));
+    return names.find((n) => n.toLowerCase() === w) ?? (starts.length === 1 ? starts[0] : null);
   }
 
   // ---------------------------------------------------------------- reading issues
@@ -304,10 +317,12 @@ export class Desk {
   }
 
   async onApplication(issue, parsed, events) {
-    await this.labels(issue, 'apply', null);
+    const lead = parsed.as === 'lead';
+    await this.labels(issue, 'apply', null, lead ? ['dimension-lead'] : []);
     if (issue.state === 'closed') return 'closed application';
-    // a contributor on the list may apply to be a specialist reviewer; a specialist reviewer or an editor already decides on contributions
     const known = this.roster.find(issue.user?.login, issue.user?.id);
+    if (lead) return this.onLeadApplication(issue, parsed, events, known);
+    // a contributor on the list may apply to be a specialist reviewer; a specialist reviewer or an editor already decides on contributions
     if (known && canReview(known.role)) {
       await this.notice(issue, events, 'already-listed', `@${issue.user.login} is already on the [list of people](${this.link('blob/main/PEOPLE.md')}) as ${aRole(known.role)}.`);
       return 'already listed';
@@ -319,14 +334,41 @@ export class Desk {
     return 'application';
   }
 
-  /** Put a person on the list of people, or change their role on it, and say so on the issue: as a card on an application. */
-  async admit(issue, { login, id, name, affiliation = '', role, areas = [], actor, actorId = null, application }) {
+  /**
+   * An application to lead a dimension. The editors decide, as on an application to review: `/admit lead` or `/decline <reason>`.
+   * Anyone on the list may apply, an editor or a specialist reviewer among them; someone who leads the dimension already is told so.
+   */
+  async onLeadApplication(issue, parsed, events, known) {
+    const login = issue.user?.login;
+    const dimension = this.dimension(parsed.application.lead);
+    if (!dimension) {
+      await this.notice(issue, events, 'lead-no-dimension', this.card('Which dimension?',
+        `@${login}, edit the issue to choose the dimension you would lead. The editors read the application once it names one.`));
+      return 'needs information';
+    }
+    if (known && leadsOf(known).some((l) => l.dimension === dimension)) {
+      await this.notice(issue, events, 'already-listed', `@${login} already leads ${dimension} on the [list of people](${this.link('blob/main/PEOPLE.md')}).`);
+      return 'already listed';
+    }
+    const eds = this.editors(login);
+    const others = this.roster.leadsFor(dimension).filter((p) => !same(p.login, login)).map((p) => `@${p.login}`);
+    const facts = [known ? `@${login} is on the list of people as ${asWhat(known.role, leadsOf(known)[0]?.dimension ?? null)}.` : '',
+      others.length ? `${dimension} has a lead already: ${others.join(', ')}.` : `${dimension} has no lead yet.`].filter(Boolean).join(' ');
+    await this.notice(issue, events, `application-received:${dimension}`, this.card('Application received',
+      `Thank you for applying to lead ${dimension}, @${login}. The editors read each application and reply here.`,
+      { notes: eds.length ? `${this.mentions(eds)}: a new application to lead ${dimension}. Approve it with \`/admit lead\`, or answer with \`/decline <reason>\`. `
+        + `\`/admit reviewer\` lists the applicant as a specialist reviewer instead. ${facts}` : '' }));
+    return 'application';
+  }
+
+  /** Put a person on the list of people, or change their role on it, and say so on the issue: as a card on an application. `lead` names the dimension they lead. */
+  async admit(issue, { login, id, name, affiliation = '', role, areas = [], lead = null, actor, actorId = null, application }) {
     const before = this.roster.find(login, id);
     await this.changeRoster((roster) => {
-      const outcome = roster.admit({ login, id, name, affiliation, role, areas, since: this.today(), issue: issue.number });
-      return outcome === 'nothing' ? null : `Admit @${login} as ${roleName(role)} (#${issue.number})`;
+      const outcome = roster.admit({ login, id, name, affiliation, role, areas, lead, since: this.today(), issue: issue.number });
+      return outcome === 'nothing' ? null : `Admit @${login} as ${lead ? `the dimension lead for ${lead}` : roleName(role)} (#${issue.number})`;
     });
-    const what = aRole(role);
+    const what = asWhat(role, lead);
     const reviews = canReview(role)
       ? 'You will be asked to decide on contributions here: comment `/approve`, `/changes <what to change>` or `/decline <reason>` on the issue, '
         + `or from your AI assistant with The Intelligence Radar's MCP server. [CONTRIBUTING.md](${this.link('blob/main/CONTRIBUTING.md')}) explains the review policy.`
@@ -334,7 +376,7 @@ export class Desk {
     const list = `[list of people](${this.link('blob/main/PEOPLE.md')})`;
     const text = `${before ? `@${login} is now ${what} on the ${list}, approved by @${actor}.` : `Welcome, @${login}: approved by @${actor} as ${what}, and now on the ${list}.`} ${reviews}`;
     await this.say(issue, application ? this.card('Welcome to The Intelligence Radar', text) : text,
-      [{ e: 'admitted', login, id, role, by: actor, by_id: actorId, name }]);
+      [{ e: 'admitted', login, id, role, ...(lead ? { lead } : {}), by: actor, by_id: actorId, name }]);
     if (application) {
       await this.labels(issue, 'apply', null, ['admitted']);
       await this.gh.close(issue.number, 'completed');
@@ -408,6 +450,7 @@ export class Desk {
     if (cmd.name === 'admit') {
       if (actorRole !== 'editor') return reply('only editors decide who is on the list of people.');
       const role = roleWord(cmd.args.split(/\s+/)[0] || 'contributor');
+      if (role === 'lead') return reply('a dimension lead joins from an application to lead a dimension, or with `/role @login lead <dimension>`.');
       if (!role) return reply('name the role: `/admit contributor`, `/admit reviewer` or `/admit editor`.');
       const listed = this.roster.find(author, issue.user?.id);
       if (listed?.role === role) return reply(`@${author} is already on the list of people as ${aRole(role)}.`);
@@ -523,27 +566,43 @@ export class Desk {
   }
 
   async applicationCommand(issue, parsed, cmd, actor, actorRole, reply, actorId = null) {
-    if (!['admit', 'decline'].includes(cmd.name)) return reply('on an application, editors use `/admit reviewer`, `/admit editor` or `/decline <reason>`.');
+    const toLead = parsed.as === 'lead';
+    const app = parsed.application;
+    const applied = toLead ? this.dimension(app.lead) : null;
+    if (!['admit', 'decline'].includes(cmd.name)) {
+      return reply(toLead ? 'on an application to lead a dimension, editors use `/admit lead`, `/admit reviewer` or `/decline <reason>`.'
+        : 'on an application, editors use `/admit reviewer`, `/admit editor` or `/decline <reason>`.');
+    }
     if (actorRole !== 'editor') return reply('only editors decide on applications.');
     const applicant = issue.user;
+    if (same(actor, applicant?.login)) return reply('another editor decides on your own application.');
     if (cmd.name === 'decline') {
       if (!cmd.text) return reply('give the reason: `/decline <reason>`.');
       await this.say(issue, this.card('Application not approved', [`Not approved by @${actor} (editor):`, quote(cmd.text),
         `Thank you for your interest in The Intelligence Radar, @${applicant.login}.`]),
-        [{ e: 'application-declined', login: applicant.login, id: applicant.id ?? null, by: actor, by_id: actorId, reason: cmd.text }]);
+        [{ e: 'application-declined', login: applicant.login, id: applicant.id ?? null, ...(applied ? { lead: applied } : {}), by: actor, by_id: actorId, reason: cmd.text }]);
       await this.gh.close(issue.number, 'not_planned');
       return 'application declined';
     }
-    // an application is to review: a bare /admit makes the applicant a specialist reviewer, and /admit editor an editor
-    const role = roleWord(cmd.args.split(/\s+/)[0] || 'reviewer');
-    if (!role) return reply('name the role: `/admit reviewer`, `/admit editor` or `/admit contributor`.');
-    if (this.roster.find(applicant.login, applicant.id)?.role === role) {
-      return reply(`@${applicant.login} is already on the list of people as ${aRole(role)}.`);
+    // a bare /admit gives what the application asks for: a specialist reviewer, or the lead of the dimension it names.
+    // /admit lead <dimension> names another dimension; on an application to lead, /admit editor makes an editor who leads it.
+    const [word, ...rest] = cmd.args.split(/\s+/).filter(Boolean);
+    const role = roleWord(word || (toLead ? 'lead' : 'reviewer'));
+    if (!role) return reply(toLead ? 'name the role: `/admit lead`, `/admit reviewer` or `/admit editor`.' : 'name the role: `/admit reviewer`, `/admit editor` or `/admit contributor`.');
+    let lead = null;
+    if (role === 'lead' || (toLead && role === 'editor')) {
+      lead = rest.length ? this.dimension(rest.join(' ')) : applied;
+      if (!lead) return reply(rest.length ? `${rest.join(' ')} is not one of the dimensions: give its number or its name.` : 'name the dimension: `/admit lead <dimension>`.');
     }
-    const app = parsed.application;
-    await this.admit(issue, { login: applicant.login, id: applicant.id, name: app.name || applicant.login, affiliation: app.affiliation || '', role,
-      areas: Array.isArray(app.areas) ? app.areas : [], actor, actorId, application: true });
-    return `admitted as ${role}`;
+    const known = this.roster.find(applicant.login, applicant.id);
+    // a dimension lead decides on contributions as a specialist reviewer does; an editor who leads a dimension stays an editor
+    const position = role === 'lead' ? (known?.role === 'editor' ? 'editor' : 'reviewer') : role;
+    if (known?.role === position && (!lead || leadsOf(known).some((l) => l.dimension === lead))) {
+      return reply(`@${applicant.login} is already on the list of people as ${asWhat(position, lead)}.`);
+    }
+    await this.admit(issue, { login: applicant.login, id: applicant.id, name: app.name || applicant.login, affiliation: app.affiliation || '', role: position,
+      areas: Array.isArray(app.areas) ? app.areas : lead ? [lead] : [], lead, actor, actorId, application: true });
+    return lead ? `admitted as ${position}, leading ${lead}` : `admitted as ${role}`;
   }
 
   async peopleCommand(issue, cmd, actor, actorRole, reply, actorId = null) {
@@ -555,12 +614,37 @@ export class Desk {
     const editors = this.roster.people.filter((p) => p.role === 'editor');
     if (cmd.name === 'role') {
       const role = roleWord(rest[0]);
-      if (!role) return reply('name the role: `/role @login contributor`, `reviewer` or `editor`.');
+      if (!role) return reply('name the role: `/role @login contributor`, `reviewer`, `editor` or `lead <dimension>`.');
+      if (role === 'lead') {
+        // the lead of a dimension: a specialist reviewer, or an editor who stays an editor
+        const lead = this.dimension(rest.slice(1).join(' '));
+        if (!lead) return reply('name the dimension: `/role @login lead <dimension>`, by its number or its name.');
+        if (leadsOf(person).some((l) => l.dimension === lead)) return reply(`@${person.login} already leads ${lead}.`);
+        const position = person.role === 'editor' ? 'editor' : 'reviewer';
+        await this.changeRoster((roster) => {
+          const p = roster.find(login);
+          if (!p) return null;
+          p.role = position;
+          return roster.lead(p, lead, this.today()) ? `@${person.login} leads ${lead}` : null;
+        });
+        await this.say(issue, `@${person.login} is now ${asWhat(position, lead)} (changed by @${actor}).`,
+          [{ e: 'role', login: person.login, id: person.id ?? null, role: position, lead, by: actor, by_id: actorId }]);
+        return `lead ${lead}`;
+      }
       if (person.role === 'editor' && role !== 'editor' && editors.length === 1) return reply('the list must keep at least one editor.');
-      if (person.role === role) return reply(`@${person.login} is already ${aRole(role)}.`);
-      await this.changeRoster((roster) => (roster.admit({ ...roster.find(login), role }) === 'role' ? `@${person.login} is now ${roleName(role)}` : null));
-      await this.say(issue, `@${person.login} is now ${aRole(role)} (changed by @${actor}).`,
-        [{ e: 'role', login: person.login, id: person.id ?? null, role, by: actor, by_id: actorId }]);
+      // /role gives exactly that role: it ends any lead the person holds
+      const ended = leadsOf(person).map((l) => l.dimension);
+      if (person.role === role && !ended.length) return reply(`@${person.login} is already ${aRole(role)}.`);
+      await this.changeRoster((roster) => {
+        const p = roster.find(login);
+        if (!p) return null;
+        p.role = role;
+        roster.endLeads(p);
+        return `@${person.login} is now ${roleName(role)}`;
+      });
+      const open = ended.length ? ` The lead for ${ended.join(' and for ')} is open.` : '';
+      await this.say(issue, `@${person.login} is now ${aRole(role)} (changed by @${actor}).${open}`,
+        [{ e: 'role', login: person.login, id: person.id ?? null, role, ...(ended.length ? { ended } : {}), by: actor, by_id: actorId }]);
       return `role ${role}`;
     }
     const reason = rest.join(' ').trim() || cmd.text.replace(who, '').trim();
@@ -596,5 +680,7 @@ function roleWord(word) {
   if (w === 'contributor') return 'contributor';
   if (w === 'reviewer' || w === 'specialist' || w === 'specialist-reviewer') return 'reviewer';
   if (w === 'editor') return 'editor';
+  // a dimension lead: a position held by a specialist reviewer or an editor, with the dimension they lead
+  if (w === 'lead' || w === 'dimension-lead') return 'lead';
   return null;
 }
